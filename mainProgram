@@ -12,25 +12,25 @@ void intializeArr(int SIZEX, int SIZEY, char GAMEBOARD[SIZEX][SIZEY]){
     }
 }
 
-void move(char moveInput, int currentCord[], int newCords[]) {
+void move(char moveInput, int currentCord[], int newCords[], int SIZEX, int SIZEY,char GAMEBOARD[SIZEX][SIZEY]){
+    GAMEBOARD[currentCord[0]][currentCord[1]] = ' '; // HARDCODED FOR TEST
     newCords[0] = currentCord[0];
     newCords[1] = currentCord[1];
 
     switch(moveInput){
         case 'a':
-            newCords[0] -= 1;
-            break;
-        case 'w':
             newCords[1] -= 1;
             break;
-        case 's':
-            newCords[1] += 1;
+        case 'w':
+            newCords[0] -= 1;
             break;
-        case 'd':
+        case 's':
             newCords[0] += 1;
             break;
-    }
-}
+        case 'd':
+            newCords[1] += 1;
+            break;
+    }}
 
 
 
@@ -99,7 +99,7 @@ while(run){
     if( userInput == '0'){
         run = false;
     }
-    move(userInput, userCord, newCord);
+    move(userInput, userCord, newCord, SIZEX, SIZEY,GAMEBOARD);
     gameReact();
 }
 
