@@ -138,6 +138,9 @@ void gameReact(){
 
 
 int main(){
+
+_setmode(_fileno(stdout), _O_U16TEXT); //This is used to set the terminal so it can output unicode/16-bit characters
+
 const int SIZEX = 19;// Size of Gameboard X 
 const int SIZEY = 21;//Size of Gameboard Y
 int userDir = 0; // used to update DISPLAYUSER.
