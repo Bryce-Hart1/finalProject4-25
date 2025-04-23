@@ -62,10 +62,13 @@ const char DISPLAYUSER[4] = {'>', '<', '^', 'v'}; //displays what direction the 
 int userCord[2] = {10, 13};
 bool run;
 char userInput;
+//make sure to free mem
 while(run){
-    displayBoard(SIZEX, SIZEY,GAMEBOARD);
-
-
+    displayALL(SIZEX, SIZEY,GAMEBOARD, userCord);
+    scanf(userInput);
+    if(userInput == '0'){
+        run == false;
+    }
 
 
 
