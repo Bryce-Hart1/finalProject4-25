@@ -13,7 +13,7 @@ void intializeArr(int SIZEX, int SIZEY, char GAMEBOARD[SIZEX][SIZEY]){
 }
 
 void move(char moveInput, int currentCord[], int newCords[], int SIZEX, int SIZEY,char GAMEBOARD[SIZEX][SIZEY]){
-    GAMEBOARD[currentCord[0]][currentCord[1]] = ' '; // HARDCODED FOR TEST
+    GAMEBOARD[currentCord[0]][currentCord[1]] = ' '; // puts space in old spot
     newCords[0] = currentCord[0];
     newCords[1] = currentCord[1];
 
