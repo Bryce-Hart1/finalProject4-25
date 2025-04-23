@@ -52,6 +52,9 @@ void whereWall(int SIZEX, int SIZEY, char GAMEBOARD[SIZEX][SIZEY]){
     GAMEBOARD[0][5] = '-';
 }
 
+whereGhost(){
+
+}
 
 
 void displayBoard(int SIZEX, int SIZEY, char GAMEBOARD[SIZEX][SIZEY]){
@@ -89,6 +92,7 @@ int userCord[2] = {10, 13}; //current space of the user
 bool run = true; //if this is false the game stops
 char userInput; // actual user input
 int newCord[2]; //returns new cord from move function
+int ghostCord[8] = {10,7, 11,7, 9,7, 10,6};
 //malloc(GAMEBOARD);
 
 
