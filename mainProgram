@@ -4,6 +4,20 @@
 #include <fcntl.h>
 #include <stdlib.h>
 
+int randNumber(){
+    srand(time(NULL));
+
+    // Generate and print a random number between 0 and RAND_MAX
+    int randomNumber = rand();
+    printf("Random number: %d\n", randomNumber);
+
+    // Generate and print a random number between 1 and 100
+    int min = 1;
+    int max = 100;
+    int rangedRandomNumber = (rand() % (max - min + 1)) + min;
+    return randNumber;
+}
+
 void intializeArr(int SIZEX, int SIZEY, char GAMEBOARD[SIZEX][SIZEY]){
     for (int i = 0; i < SIZEX; i++){
         for (int j = 0; j < SIZEY; j++){
