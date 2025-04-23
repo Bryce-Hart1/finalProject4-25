@@ -3,17 +3,16 @@
 #include <wchar.h>
 #include <fcntl.h>
 
-
 void intializeArr(int SIZEX, int SIZEY, char GAMEBOARD[SIZEX][SIZEY]){
     for (int i = 0; i < SIZEX; i++){
-        for (int j = 0; j < SIZEY; i++){
-            GAMEBOARD[i][j] == ' ';
+        for (int j = 0; j < SIZEY; j++){
+            GAMEBOARD[i][j] = ' ';
         }
     }
 }
 
 void move(char moveInput, int currentCord[], int newCords[], int SIZEX, int SIZEY,char GAMEBOARD[SIZEX][SIZEY]){
-    GAMEBOARD[currentCord[0]][currentCord[1]] = ' '; // puts space in old spot
+    GAMEBOARD[currentCord[0]][currentCord[1]] = ' '; 
     newCords[0] = currentCord[0];
     newCords[1] = currentCord[1];
 
@@ -52,9 +51,11 @@ void whereWall(int SIZEX, int SIZEY, char GAMEBOARD[SIZEX][SIZEY]){
     GAMEBOARD[0][5] = '-';
 }
 
-whereGhost(){
+void whereGhost(int ghostCord[8],int SIZEX, int SIZEY, char GAMEBOARD[SIZEX][SIZEY]){
+for (int i = 0; i < 4; i++){
+    GAMEBOARD[ghostCord[i * 2]][ghostCord[i * 2 + 1]] = '0'; // temp ghost char
+}}
 
-}
 
 
 void displayBoard(int SIZEX, int SIZEY, char GAMEBOARD[SIZEX][SIZEY]){
@@ -66,10 +67,11 @@ printf("\n");
 
 
 //displays everything in the terminal once it runs through all the functions
-void displayALL(int SIZEX, int SIZEY, char GAMEBOARD[SIZEX][SIZEY], int userCord[2]){
+void displayALL(int SIZEX, int SIZEY, char GAMEBOARD[SIZEX][SIZEY], int userCord[2], int ghostCord[8]){
     whereUser(SIZEX, SIZEY,GAMEBOARD, userCord);
     whereItem();
     whereWall(SIZEX, SIZEY, GAMEBOARD);
+    whereGhost(ghostCord, SIZEX, SIZEY, GAMEBOARD);
     displayBoard(SIZEX, SIZEY,GAMEBOARD);
 }
 
@@ -92,18 +94,20 @@ int userCord[2] = {10, 13}; //current space of the user
 bool run = true; //if this is false the game stops
 char userInput; // actual user input
 int newCord[2]; //returns new cord from move function
-int ghostCord[8] = {10,7, 11,7, 9,7, 10,6};
+int ghostCord[8] = {10,7, 11,7, 9,7, 10,6}; // where ghosts are located
+
+
 //malloc(GAMEBOARD);
-
-
 intializeArr(SIZEX, SIZEY,GAMEBOARD);
 while(run){
-    displayALL(SIZEX, SIZEY,GAMEBOARD, userCord);
+    displayALL(SIZEX, SIZEY,GAMEBOARD, userCord, ghostCord);
     scanf(" %c", &userInput);
     if( userInput == '0'){
         run = false;
     }
     move(userInput, userCord, newCord, SIZEX, SIZEY,GAMEBOARD);
+    userCord[0] = newCord[0];
+    userCord[1] = newCord[1];
     gameReact();
 }
 
