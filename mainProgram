@@ -20,23 +20,25 @@ void up(int userCord[]){ //moves up
     userCord[1]--;
     return;
 }
-void move(userInput, userCord){
-    switch(userInput){
+void move(char moveInput, int currentCord[], int newCords[]) {
+    newCords[0] = currentCord[0];
+    newCords[1] = currentCord[1];
+    switch(moveInput){
         case 'a':
-            left(userCord);
+            newCords[0] -= 1;
             break;
         case 'w':
-            up(userCord);
+            newCords[1] -= 1;
             break;
         case 's':
-            down(userCord);
+            newCords[1] += 1;
             break;
         case 'd':
-            right(userCord);
+            newCords[0] += 1;
             break;
     }
-    return;
 }
+
 
 
 void displayBoard(int SIZEX, int SIZEY, char GAMEBOARD[SIZEX][SIZEY]){
