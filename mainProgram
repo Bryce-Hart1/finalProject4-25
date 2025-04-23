@@ -36,8 +36,11 @@ void whereItem(){};
 void whereWall(int SIZEX, int SIZEY, char GAMEBOARD[SIZEX][SIZEY]){
     //just some sample walls add here later garrett
     GAMEBOARD[0][0] = '-';
-    GAMEBOARD[1][0] = '-';
-    GAMEBOARD[2][0] = '-';
+    GAMEBOARD[0][1] = '-';
+    GAMEBOARD[0][2] = '-';
+    GAMEBOARD[0][3] = '-';
+    GAMEBOARD[0][4] = '-';
+    GAMEBOARD[0][5] = '-';
 }
 
 
