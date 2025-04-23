@@ -39,6 +39,12 @@ void move(userInput, userCord){
 }
 
 
+void displayBoard(int SIZEX, int SIZEY, char GAMEBOARD[SIZEX][SIZEY]){
+for(int i = 0; i<SIZEX; i++){
+for(int j = 0; j<SIZEY; j++){
+printf("%2c", GAMEBOARD[i][j]);}
+printf("\n");
+}}
 
 
 
