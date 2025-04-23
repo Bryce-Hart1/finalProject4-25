@@ -1,5 +1,5 @@
 #include<stdio.h>
-
+#include<stdbool.h>
 
 
 penis (lol)
@@ -19,7 +19,7 @@ penis (lol)
 int main(){
 
 
-
+while(run)
 
 
 }
