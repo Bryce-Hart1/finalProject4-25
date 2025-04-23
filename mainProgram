@@ -3,6 +3,44 @@
 #include <wchar.h>
 #include <fcntl.h>
 #include <stdlib.h>
+#include <io.h>
+
+const wchar_t block = L'█';
+const wchar_t characterUp = L'˅';
+const wchar_t characterDown = L'^';
+const wchar_t characterLeft = L'>';
+const wchar_t characterRight = L'<';
+const wchar_t ghost = L'ᗣ';
+const wchar_t pellet = L'•';
+const wchar_t powerPellet = L'⬤';
+const wchar_t emptySpace = L' ';
+
+#define rows 21
+#define columns 19
+
+wchar_t map[rows][columns] = {
+    {block, block, block, block, block, block, block, block, block, block, block, block, block, block, block, block, block, block, block},
+    {block, pellet, pellet, pellet, pellet, pellet, pellet, pellet, pellet, block, pellet, pellet, pellet, pellet, pellet, pellet, pellet, pellet, block},
+    {block, powerPellet, block, block, pellet, block, block, block, pellet, block, pellet, block, block, block, pellet, block, block, powerPellet, block},
+    {block, pellet, pellet, pellet, pellet, pellet, pellet, pellet, pellet, pellet, pellet, pellet, pellet, pellet, pellet, pellet, pellet, pellet, block},
+    {block, pellet, block, block, pellet, block, pellet, block, block, block, block, block, pellet, block, pellet, block, block, pellet, block},
+    {block, pellet, pellet, pellet, pellet, block, pellet, pellet, pellet, block, pellet, pellet, pellet, block, pellet, pellet, pellet, pellet, block},
+    {block, block, block, block, pellet, block, block, block, emptySpace, block, emptySpace, block, block, block, pellet, block, block, block, block},
+    {emptySpace, emptySpace, emptySpace, block, pellet, block, emptySpace, emptySpace, emptySpace, emptySpace, emptySpace, emptySpace, emptySpace, block, pellet, block, emptySpace, emptySpace, emptySpace}, //hufbrbhuebhrvbhkbhk
+    {block, block, block, block, pellet, block, emptySpace, block, block, emptySpace, block, block, emptySpace, block, pellet, block, block, block, block}, //LINE WHERE 1 GHOST SPAWNS
+    {emptySpace, emptySpace, emptySpace, emptySpace, pellet, emptySpace, emptySpace, block, emptySpace, emptySpace, emptySpace, block, emptySpace, emptySpace, pellet, emptySpace, emptySpace, emptySpace, emptySpace}, //LINE WHERE 3 GHOSTS SPAWN
+    {block, block, block, block, pellet, block, emptySpace, block, block, block, block, block, emptySpace, block, pellet, block, block, block, block},
+    {emptySpace, emptySpace, emptySpace, block, pellet, block, emptySpace, emptySpace, emptySpace, emptySpace, emptySpace, emptySpace, emptySpace, block, pellet, block, emptySpace, emptySpace, emptySpace},
+    {block, block, block, block, pellet, block, emptySpace, block, block, block, block, block, emptySpace, block, pellet, block, block, block, block},
+    {block, pellet, pellet, pellet, pellet, pellet, pellet, pellet, pellet, block, pellet, pellet, pellet, pellet, pellet, pellet, pellet, pellet, block},
+    {block, pellet, block, block, pellet, block, block, block, pellet, block, pellet, block, block, block, pellet, block, block, pellet, block},
+    {block, powerPellet, pellet, block, pellet, pellet, pellet, pellet, pellet, characterUp, pellet, pellet, pellet, pellet, pellet, block, pellet, powerPellet, block}, //SPAWN CHARACTER HERE
+    {block, block, pellet, block, pellet, block, pellet, block, block, block, block, block, pellet, block, pellet, block, pellet, block, block},
+    {block, pellet, pellet, pellet, pellet, block, pellet, pellet, pellet, block, pellet, pellet, pellet, block, pellet, pellet, pellet, pellet, block},
+    {block, pellet, block, block, block, block, block, block, pellet, block, pellet, block, block, block, block, block, block, pellet, block},
+    {block, pellet, pellet, pellet, pellet, pellet, pellet, pellet, pellet, pellet, pellet, pellet, pellet, pellet, pellet, pellet, pellet, pellet, block},
+    {block, block, block, block, block, block, block, block, block, block, block, block, block, block, block, block, block, block, block}
+};
 
 int randNumber(){
     srand(time(NULL));
