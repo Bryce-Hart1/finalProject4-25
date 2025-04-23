@@ -4,6 +4,13 @@
 #include <fcntl.h>
 
 
+void intializeArr(int SIZEX, int SIZEY, char GAMEBOARD[SIZEX][SIZEY]){
+    for (int i = 0; i < SIZEX; i++){
+        for (int j = 0; j < SIZEY; i++){
+            GAMEBOARD[i][j] == ' ';
+        }
+    }
+}
 
 void move(char moveInput, int currentCord[], int newCords[]) {
     newCords[0] = currentCord[0];
@@ -83,6 +90,9 @@ bool run = true; //if this is false the game stops
 char userInput; // actual user input
 int newCord[2]; //returns new cord from move function
 //malloc(GAMEBOARD);
+
+
+intializeArr(SIZEX, SIZEY,GAMEBOARD);
 while(run){
     displayALL(SIZEX, SIZEY,GAMEBOARD, userCord);
     scanf(" %c", &userInput);
