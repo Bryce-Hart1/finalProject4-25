@@ -54,21 +54,24 @@ printf("\n");
 
 
 int main(){
-const int SIZEX = 19;
-const int SIZEY = 21;
-char GAMEBOARD[19][21];
+const int SIZEX = 19;// Size of Gameboard X 
+const int SIZEY = 21;//Size of Gameboard Y
 int userDir = 0; // used to update DISPLAYUSER.
 const char DISPLAYUSER[4] = {'>', '<', '^', 'v'}; //displays what direction the user is facing
-int userCord[2] = {10, 13};
-bool run;
-char userInput;
-//make sure to free mem
+char GAMEBOARD[19][21];
+int userCord[2] = {10, 13}; //current space of the user
+bool run; //if this is false the game stops
+char userInput; // actual user input
+int newCord[2]; //returns new cord from move function
+//malloc(GAMEBOARD);
 while(run){
     displayALL(SIZEX, SIZEY,GAMEBOARD, userCord);
     scanf(userInput);
     if(userInput == '0'){
         run == false;
     }
+    move(userInput, userCord, newCord);
+    gameReact();
 
 
 
