@@ -61,7 +61,7 @@ int userCord[2] = {10, 13};
 bool run;
 char userInput;
 while(run){
-
+    displayBoard(SIZEX, SIZEY,GAMEBOARD);
 
 
 
