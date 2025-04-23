@@ -2,6 +2,7 @@
 #include <stdbool.h>
 #include <wchar.h>
 #include <fcntl.h>
+#include <stdlib.h>
 
 void intializeArr(int SIZEX, int SIZEY, char GAMEBOARD[SIZEX][SIZEY]){
     for (int i = 0; i < SIZEX; i++){
