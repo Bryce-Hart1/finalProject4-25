@@ -2,19 +2,37 @@
 #include<stdbool.h>
 
 
-void move(userInput, oldX, oldY){
+
+
+void left(int userCord[]){ //moves left
+    userCord[0]--;
+    return;
+}
+void right(int userCord[]){ //moves right
+    userCord[0]++;
+    return;
+}
+void down(int userCord[]){//moves down
+    userCord[1]++;
+    return;
+}
+void up(int userCord[]){ //moves up
+    userCord[1]--;
+    return;
+}
+void move(userInput, userCord){
     switch(userInput){
         case 'a':
-            left();
+            left(userCord);
             break;
         case 'w':
-            up();
+            up(userCord);
             break;
         case 's':
-            down();
+            down(userCord);
             break;
         case 'd':
-            right();
+            right(userCord);
             break;
     }
     return;
@@ -27,18 +45,13 @@ void move(userInput, oldX, oldY){
 
 
 
-
-
-
-
-
 int main(){
+const int SIZEX = 19;
+const int SIZEY = 21;
 char GAMEBOARD[19][21];
+int userCord[2] = {10, 13};
 bool run;
 char userInput;
-int oldX, oldY;
-
-
 while(run){
 
 
