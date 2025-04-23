@@ -33,6 +33,7 @@ void move(userInput, oldX, oldY){
 
 
 int main(){
+char GAMEBOARD[19][21];
 bool run;
 char userInput;
 int oldX, oldY;
