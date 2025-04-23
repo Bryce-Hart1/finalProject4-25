@@ -2,7 +2,23 @@
 #include<stdbool.h>
 
 
-penis (lol)
+void move(userInput, oldX, oldY){
+    switch(userInput){
+        case 'a':
+            left();
+            break;
+        case 'w':
+            up();
+            break;
+        case 's':
+            down();
+            break;
+        case 'd':
+            right();
+            break;
+    }
+    return;
+}
 
 
 
@@ -17,6 +33,9 @@ penis (lol)
 
 
 int main(){
+bool run;
+char userInput;
+int oldX, oldY;
 
 
 while(run){
