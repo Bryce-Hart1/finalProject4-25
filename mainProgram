@@ -31,9 +31,14 @@ void whereUser(int SIZEX, int SIZEY, char GAMEBOARD[SIZEX][SIZEY], int userCord[
     GAMEBOARD[userCord[0]][userCord[1]] = '<';
 }
 
-void whereItem();
+void whereItem(){};
 
-void whereWall();
+void whereWall(int SIZEX, int SIZEY, char GAMEBOARD[SIZEX][SIZEY]){
+    //just some sample walls add here later garrett
+    GAMEBOARD[0][0] = '-';
+    GAMEBOARD[1][0] = '-';
+    GAMEBOARD[2][0] = '-';
+}
 
 
 
@@ -48,18 +53,17 @@ printf("\n");
 void displayALL(int SIZEX, int SIZEY, char GAMEBOARD[SIZEX][SIZEY], int userCord[2]){
     whereUser(SIZEX, SIZEY,GAMEBOARD, userCord);
     whereItem();
-    whereWall();
+    whereWall(SIZEX, SIZEY, GAMEBOARD);
     displayBoard(SIZEX, SIZEY,GAMEBOARD);
 }
 
 
 
-gameReact(){
+void gameReact(){
     //implement ghosts reacting 
     //check where user is and if item has been picked up
 
 }
-
 
 
 int main(){
@@ -69,23 +73,18 @@ int userDir = 0; // used to update DISPLAYUSER.
 const char DISPLAYUSER[4] = {'>', '<', '^', 'v'}; //displays what direction the user is facing
 char GAMEBOARD[19][21];
 int userCord[2] = {10, 13}; //current space of the user
-bool run; //if this is false the game stops
+bool run = true; //if this is false the game stops
 char userInput; // actual user input
 int newCord[2]; //returns new cord from move function
 //malloc(GAMEBOARD);
 while(run){
     displayALL(SIZEX, SIZEY,GAMEBOARD, userCord);
-    scanf(userInput);
-    if(userInput == '0'){
-        run == false;
+    scanf(" %c", &userInput);
+    if( userInput == '0'){
+        run = false;
     }
     move(userInput, userCord, newCord);
     gameReact();
-
-
-
-
-
 }
 
 
