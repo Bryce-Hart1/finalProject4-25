@@ -3,27 +3,10 @@
 
 
 
-
-void left(int userCord[]){ //moves left
-    userCord[0]--;
-    return;
-}
-void right(int userCord[]){ //moves right
-    userCord[0]++;
-    return;
-}
-void down(int userCord[]){//moves down
-    userCord[1]++;
-    return;
-}
-void up(int userCord[]){ //moves up
-    userCord[1]--;
-    return;
-}
-
 void move(char moveInput, int currentCord[], int newCords[]) {
     newCords[0] = currentCord[0];
     newCords[1] = currentCord[1];
+
     switch(moveInput){
         case 'a':
             newCords[0] -= 1;
@@ -42,6 +25,18 @@ void move(char moveInput, int currentCord[], int newCords[]) {
 
 
 
+
+
+void whereUser(int SIZEX, int SIZEY, char GAMEBOARD[SIZEX][SIZEY], int userCord[2]){
+    GAMEBOARD[userCord[0]][userCord[1]] = '<';
+}
+
+void whereItem();
+
+void whereWall();
+
+
+
 void displayBoard(int SIZEX, int SIZEY, char GAMEBOARD[SIZEX][SIZEY]){
 for(int i = 0; i<SIZEX; i++){
 for(int j = 0; j<SIZEY; j++){
@@ -51,10 +46,18 @@ printf("\n");
 
 
 void displayALL(int SIZEX, int SIZEY, char GAMEBOARD[SIZEX][SIZEY], int userCord[2]){
-    whereUser(userCord);
+    whereUser(SIZEX, SIZEY,GAMEBOARD, userCord);
     whereItem();
     whereWall();
     displayBoard(SIZEX, SIZEY,GAMEBOARD);
+}
+
+
+
+gameReact(){
+    //implement ghosts reacting 
+    //check where user is and if item has been picked up
+
 }
 
 
