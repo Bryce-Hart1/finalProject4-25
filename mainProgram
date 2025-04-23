@@ -53,6 +53,7 @@ printf("\n");
 }}
 
 
+//displays everything in the terminal once it runs through all the functions
 void displayALL(int SIZEX, int SIZEY, char GAMEBOARD[SIZEX][SIZEY], int userCord[2]){
     whereUser(SIZEX, SIZEY,GAMEBOARD, userCord);
     whereItem();
