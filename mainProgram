@@ -49,6 +49,8 @@ int main(){
 const int SIZEX = 19;
 const int SIZEY = 21;
 char GAMEBOARD[19][21];
+int userDir = 0; // used to update DISPLAYUSER.
+const char DISPLAYUSER[4] = {'>', '<', '^', 'v'}; //displays what direction the user is facing
 int userCord[2] = {10, 13};
 bool run;
 char userInput;
