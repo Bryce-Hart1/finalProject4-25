@@ -20,6 +20,7 @@ void up(int userCord[]){ //moves up
     userCord[1]--;
     return;
 }
+
 void move(char moveInput, int currentCord[], int newCords[]) {
     newCords[0] = currentCord[0];
     newCords[1] = currentCord[1];
@@ -49,7 +50,12 @@ printf("\n");
 }}
 
 
-
+void displayALL(int SIZEX, int SIZEY, char GAMEBOARD[SIZEX][SIZEY], int userCord[2]){
+    whereUser(userCord);
+    whereItem();
+    whereWall();
+    displayBoard(SIZEX, SIZEY,GAMEBOARD);
+}
 
 
 
