@@ -56,9 +56,16 @@ int randNumber(){
     return randNumber;
 }
 
+void intializeArr(int SIZEX, int SIZEY, char map[SIZEX][SIZEY]){
+    for (int i = 0; i < SIZEX; i++){
+        for (int j = 0; j < SIZEY; j++){
+            map[i][j] = ' ';
+        }
+    }
+}
 
-void move(char moveInput, int currentCord[], int newCords[], int SIZEX, int SIZEY,char GAMEBOARD[SIZEX][SIZEY]){
-    GAMEBOARD[currentCord[0]][currentCord[1]] = ' '; 
+void move(char moveInput, int currentCord[], int newCords[], int SIZEX, int SIZEY,char map[SIZEX][SIZEY]){
+    map[currentCord[0]][currentCord[1]] = ' '; 
     newCords[0] = currentCord[0];
     newCords[1] = currentCord[1];
 
@@ -81,44 +88,44 @@ void move(char moveInput, int currentCord[], int newCords[], int SIZEX, int SIZE
 
 
 
-void whereUser(int SIZEX, int SIZEY, char GAMEBOARD[SIZEX][SIZEY], int userCord[2]){
-    GAMEBOARD[userCord[0]][userCord[1]] = '<';
+void whereUser(int SIZEX, int SIZEY, char map[SIZEX][SIZEY], int userCord[2]){
+    map[userCord[0]][userCord[1]] = '<';
 }
 
 void whereItem(){};
 
-void whereWall(int SIZEX, int SIZEY, char GAMEBOARD[SIZEX][SIZEY]){
+void whereWall(int SIZEX, int SIZEY, char map[SIZEX][SIZEY]){
     //just some sample walls add here later garrett
-    GAMEBOARD[0][0] = '-';
-    GAMEBOARD[0][1] = '-';
-    GAMEBOARD[0][2] = '-';
-    GAMEBOARD[0][3] = '-';
-    GAMEBOARD[0][4] = '-';
-    GAMEBOARD[0][5] = '-';
+    map[0][0] = '-';
+    map[0][1] = '-';
+    map[0][2] = '-';
+    map[0][3] = '-';
+    map[0][4] = '-';
+    map[0][5] = '-';
 }
 
-void whereGhost(int ghostCord[8],int SIZEX, int SIZEY, char GAMEBOARD[SIZEX][SIZEY]){
+void whereGhost(int ghostCord[8],int SIZEX, int SIZEY, char map[SIZEX][SIZEY]){
 for (int i = 0; i < 4; i++){
     int ghostCord[8] = {7,10, 7,11, 7,9, 6,10}; // where ghosts are located
 }}
 
 
 
-void displayBoard(int SIZEX, int SIZEY, char GAMEBOARD[SIZEX][SIZEY]){
+void displayBoard(int SIZEX, int SIZEY, char map[SIZEX][SIZEY]){
 for(int i = 0; i<SIZEX; i++){
 for(int j = 0; j<SIZEY; j++){
-printf("%2c", GAMEBOARD[i][j]);}
+printf("%2c", map[i][j]);}
 printf("\n");
 }}
 
 
 //displays everything in the terminal once it runs through all the functions
-void displayALL(int SIZEX, int SIZEY, char GAMEBOARD[SIZEX][SIZEY], int userCord[2], int ghostCord[8]){
-    whereUser(SIZEX, SIZEY,GAMEBOARD, userCord);
+void displayALL(int SIZEX, int SIZEY, char map[SIZEX][SIZEY], int userCord[2], int ghostCord[8]){
+    whereUser(SIZEX, SIZEY,map, userCord);
     whereItem();
-    whereWall(SIZEX, SIZEY, GAMEBOARD);
-    whereGhost(ghostCord, SIZEX, SIZEY, GAMEBOARD);
-    displayBoard(SIZEX, SIZEY,GAMEBOARD);
+    whereWall(SIZEX, SIZEY, map);
+    whereGhost(ghostCord, SIZEX, SIZEY, map);
+    displayBoard(SIZEX, SIZEY,map);
 }
 
 
@@ -134,11 +141,11 @@ int main(){
 
 _setmode(_fileno(stdout), _O_U16TEXT); //This is used to set the terminal so it can output unicode/16-bit characters
 
-const int SIZEX = 19;// Size of Gameboard X 
-const int SIZEY = 21;//Size of Gameboard Y
+const int SIZEX = 19;// Size of map X 
+const int SIZEY = 21;//Size of map Y
 int userDir = 0; // used to update DISPLAYUSER.
 const char DISPLAYUSER[4] = {'>', '<', '^', 'v'}; //displays what direction the user is facing
-char GAMEBOARD[19][21];
+char map[19][21];
 int userCord[2] = {10, 13}; //current space of the user
 bool run = true; //if this is false the game stops
 char userInput; // actual user input
@@ -147,15 +154,15 @@ int ghostCord[8] = {10,7, 11,7, 9,7, 10,6}; // where ghosts are located
 int GAMERUNTIME = 0; //tells ghosts when to start moving
 
 
-//malloc(GAMEBOARD);
-intializeArr(SIZEX, SIZEY,GAMEBOARD);
+//malloc(map);
+intializeArr(SIZEX, SIZEY,map);
 while(run){
-    displayALL(SIZEX, SIZEY,GAMEBOARD, userCord, ghostCord);
+    displayALL(SIZEX, SIZEY,map, userCord, ghostCord);
     scanf(" %c", &userInput);
     if( userInput == '0'){
         run = false;
     }
-    move(userInput, userCord, newCord, SIZEX, SIZEY,GAMEBOARD);
+    move(userInput, userCord, newCord, SIZEX, SIZEY,map);
     userCord[0] = newCord[0];
     userCord[1] = newCord[1];
     gameReact();
