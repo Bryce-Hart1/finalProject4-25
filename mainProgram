@@ -161,38 +161,33 @@ void init_console() {
 
 
 void pelletCheck(int r, int c){
-    if(pelletsExists[r][c] && playerExist[r][c]){
-        pelletsExists[r][c] = false; //player picked up pellet
+    if (pelletsExists[r][c] && playerExist[r][c]) {
+        pelletsExists[r][c] = false; // Player picked up pellet
     }
 }
 
-
-
-
-
-//moves player
 void move(int userCord[], char moveInput){
-    int cr = userCord[0]; // current row
-    int cc = userCord[1]; // current col
-    playerExist[cr][cc] = false; // delete players old pos
+    int cr = userCord[0];
+    int cc = userCord[1];
+    int nr = cr, nc = cc;
+
     switch(moveInput){
-        case 'a':
-            cr -= 1;
-            break;
-        case 'w':
-            cc -= 1;
-            break;
-        case 's':
-            cc += 1;
-            break;
-        case 'd':
-            cr += 1;
-            break;
-        pelletCheck(cr,cc);
-        playerExist[cr][cc] = true; // add players new pos
+        case 'a': nc -= 1; break;
+        case 'w': nr -= 1; break;
+        case 's': nr += 1; break;
+        case 'd': nc += 1; break;
+        default: return; // Invalid input
+    }
 
-    }}
-
+    // Check bounds and wall
+    if (nr >= 0 && nr < ROWS && nc >= 0 && nc < COLS && !wallExists[nr][nc]) {
+        playerExist[cr][cc] = false; // Clear old position
+        playerExist[nr][nc] = true;  // Set new position
+        userCord[0] = nr;
+        userCord[1] = nc;
+        pelletCheck(nr, nc);
+    }// player will not move
+}
 
 
 // Print the game map this will do all chars. this will always print the map
