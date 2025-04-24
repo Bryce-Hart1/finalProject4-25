@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <stdbool.h>
 #include <wchar.h>
@@ -32,8 +31,12 @@ const wchar_t es = L' '; // empty space
 #define ROWS 21
 #define COLS 19
 
+/*
+we then made true false arrays for all items. this makes everything very simple to keep up with
+needed one for walls pellets powerpellets player and ghost (so 5). made walls const so that way the wall cannot be replaced.
 
-const int wallExists[ROWS][COLS] = {
+*/
+const bool wallExists[ROWS][COLS] = {
     {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
     {1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1},
     {1,0,1,1,0,1,1,1,0,1,0,1,1,1,0,1,1,0,1},
@@ -54,9 +57,8 @@ const int wallExists[ROWS][COLS] = {
     {1,0,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,0,1},
     {1,0,1,1,1,1,1,1,0,1,0,1,1,1,1,1,1,0,1},
     {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-    {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}
-};
-const int pelletsExists[ROWS][COLS] = {
+    {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1} };
+bool pelletsExists[ROWS][COLS] = {
     {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
     {0,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,0},
     {0,0,0,0,1,0,0,0,1,0,1,0,0,0,1,0,0,0,0},
@@ -79,9 +81,74 @@ const int pelletsExists[ROWS][COLS] = {
     {0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0},
     {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
 };
+bool powerPelletExist[ROWS][COLS] = {
+    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+    {0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0},
+    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+    {0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0},
+    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}};
 
+bool playerExist[ROWS][COLS] = {
+    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}};
 
-
+bool ghostExist[ROWS][COLS] = {
+    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}};
 
 // Initialize console for Unicode (cross-platform)
 void init_console() {
@@ -93,25 +160,58 @@ void init_console() {
 }
 
 
+void pelletCheck(int r, int c){
+    if(pelletsExists[r][c] && playerExist[r][c]){
+        pelletsExists[r][c] = false; //player picked up pellet
+    }
+}
 
 
 
 
 
+//moves player
+void move(int userCord[], char moveInput){
+    int cr = userCord[0]; // current row
+    int cc = userCord[1]; // current col
+    playerExist[cr][cc] = false; // delete players old pos
+    switch(moveInput){
+        case 'a':
+            cr -= 1;
+            break;
+        case 'w':
+            cc -= 1;
+            break;
+        case 's':
+            cc += 1;
+            break;
+        case 'd':
+            cr += 1;
+            break;
+        pelletCheck(cr,cc);
+        playerExist[cr][cc] = true; // add players new pos
+
+    }}
 
 
-// Print the game map this will do all ALWAYS print the map
+
+// Print the game map this will do all chars. this will always print the map
+//you do not need to do == true
 void display_map(){
-    wchar_t mapStore[9]= {block, characterUp,characterDown,characterLeft, characterRight, ghost, pellet, powerPellet, es};
     for (int i = 0; i < ROWS; i++) {
         for (int j = 0; j < COLS; j++){
-            if(wallExists[i][j] == true){
-                wprintf(L"%lc", mapStore[0]);
-            }else if(pelletsExists[i][j] == true){
-                wprintf(L"%lc", mapStore[6]);}
-            else{
-                wprintf(L"%lc", mapStore[8]);
-
+            if(wallExists[i][j]){
+                wprintf(L"%lc", block);
+            }else if(pelletsExists[i][j]){
+                wprintf(L"%lc", pellet);}
+            else if(playerExist[i][j]){
+                wprintf(L"%lc", characterRight);
+            }else if(powerPelletExist[i][j]){
+                wprintf(L"%lc", powerPellet);
+            }else if(ghostExist[i][j]){
+                wprintf(L"%lc", ghost);
+            }else{
+                wprintf(L"%lc", es);
             }
         }
         wprintf(L"\n");
@@ -124,28 +224,19 @@ int main() {
 #endif
     init_console(); // Set up Unicode output
 
-    int userCord[2] = {15, 9}; // Player position (row, col)
+    int userCord[2] = {15, 9}; // Player start pos
     bool running = true;
 
-    while (running) {
-        display_map();
 
-        wchar_t input;
+
+    while (running){
+        char input;
+        if (input == '0'){
+            running = false;}
+        display_map();
         wprintf(L"Enter move (w/a/s/d) or '0' to quit: ");
         wscanf(L" %lc", &input);
-
-        if (input == L'0') {
-            running = false;
-        } else {
-            // Move logic (simplified for example)
-            switch (input) {
-                case L'w': if (userCord[0] > 0) userCord[0]--; break;
-                case L's': if (userCord[0] < ROWS-1) userCord[0]++; break;
-                case L'a': if (userCord[1] > 0) userCord[1]--; break;
-                case L'd': if (userCord[1] < COLS-1) userCord[1]++; break;
-            }
-        }
-    }
-
-    return 0;
+        move(userCord, input);
+}
+return 0;
 }
