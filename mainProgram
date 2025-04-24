@@ -1,9 +1,20 @@
+//THIS IS THE NEW FILE PLEASE IMPORT ALL FUNCTIONS
 #include <stdio.h>
 #include <stdbool.h>
 #include <wchar.h>
-#include <fcntl.h>
 #include <stdlib.h>
+#include <time.h>
+#include <locale.h>
 
+// Windows-specific headers
+#ifdef _WIN32
+#include <io.h>
+#include <fcntl.h>
+#endif
+#ifdef __APPLE__
+#include<locale.h>
+#endif
+// Game symbols (wide characters)
 const wchar_t block = L'█';
 const wchar_t characterUp = L'˅';
 const wchar_t characterDown = L'^';
@@ -14,10 +25,10 @@ const wchar_t pellet = L'•';
 const wchar_t powerPellet = L'⬤';
 const wchar_t emptySpace = L' ';
 
-#define rows 21
-#define columns 19
+#define ROWS 21
+#define COLS 19
 
-wchar_t map[rows][columns] = {
+wchar_t map[ROWS][COLS] = {
     {block, block, block, block, block, block, block, block, block, block, block, block, block, block, block, block, block, block, block},
     {block, pellet, pellet, pellet, pellet, pellet, pellet, pellet, pellet, block, pellet, pellet, pellet, pellet, pellet, pellet, pellet, pellet, block},
     {block, powerPellet, block, block, pellet, block, block, block, pellet, block, pellet, block, block, block, pellet, block, block, powerPellet, block},
@@ -25,15 +36,15 @@ wchar_t map[rows][columns] = {
     {block, pellet, block, block, pellet, block, pellet, block, block, block, block, block, pellet, block, pellet, block, block, pellet, block},
     {block, pellet, pellet, pellet, pellet, block, pellet, pellet, pellet, block, pellet, pellet, pellet, block, pellet, pellet, pellet, pellet, block},
     {block, block, block, block, pellet, block, block, block, emptySpace, block, emptySpace, block, block, block, pellet, block, block, block, block},
-    {emptySpace, emptySpace, emptySpace, block, pellet, block, emptySpace, emptySpace, emptySpace, ghost, emptySpace, emptySpace, emptySpace, block, pellet, block, emptySpace, emptySpace, emptySpace},//LINE WHERE 1 GHOST SPAWNS
+    {emptySpace, emptySpace, emptySpace, block, pellet, block, emptySpace, emptySpace, emptySpace, ghost, emptySpace, emptySpace, emptySpace, block, pellet, block, emptySpace, emptySpace, emptySpace},
     {block, block, block, block, pellet, block, emptySpace, block, block, emptySpace, block, block, emptySpace, block, pellet, block, block, block, block}, 
-    {emptySpace, emptySpace, emptySpace, emptySpace, pellet, emptySpace, emptySpace, block, ghost, ghost, ghost, block, emptySpace, emptySpace, pellet, emptySpace, emptySpace, emptySpace, emptySpace}, //LINE WHERE 3 GHOSTS SPAWN
+    {emptySpace, emptySpace, emptySpace, emptySpace, pellet, emptySpace, emptySpace, block, ghost, ghost, ghost, block, emptySpace, emptySpace, pellet, emptySpace, emptySpace, emptySpace, emptySpace},
     {block, block, block, block, pellet, block, emptySpace, block, block, block, block, block, emptySpace, block, pellet, block, block, block, block},
     {emptySpace, emptySpace, emptySpace, block, pellet, block, emptySpace, emptySpace, emptySpace, emptySpace, emptySpace, emptySpace, emptySpace, block, pellet, block, emptySpace, emptySpace, emptySpace},
     {block, block, block, block, pellet, block, emptySpace, block, block, block, block, block, emptySpace, block, pellet, block, block, block, block},
     {block, pellet, pellet, pellet, pellet, pellet, pellet, pellet, pellet, block, pellet, pellet, pellet, pellet, pellet, pellet, pellet, pellet, block},
     {block, pellet, block, block, pellet, block, block, block, pellet, block, pellet, block, block, block, pellet, block, block, pellet, block},
-    {block, powerPellet, pellet, block, pellet, pellet, pellet, pellet, pellet, characterUp, pellet, pellet, pellet, pellet, pellet, block, pellet, powerPellet, block}, //SPAWN CHARACTER HERE
+    {block, powerPellet, pellet, block, pellet, pellet, pellet, pellet, pellet, characterUp, pellet, pellet, pellet, pellet, pellet, block, pellet, powerPellet, block},
     {block, block, pellet, block, pellet, block, pellet, block, block, block, block, block, pellet, block, pellet, block, pellet, block, block},
     {block, pellet, pellet, pellet, pellet, block, pellet, pellet, pellet, block, pellet, pellet, pellet, block, pellet, pellet, pellet, pellet, block},
     {block, pellet, block, block, block, block, block, block, pellet, block, pellet, block, block, block, block, block, block, pellet, block},
@@ -41,130 +52,53 @@ wchar_t map[rows][columns] = {
     {block, block, block, block, block, block, block, block, block, block, block, block, block, block, block, block, block, block, block}
 };
 
-int randNumber(){
-    srand(time(NULL));
-
-    // Generate and print a random number between 0 and RAND_MAX
-    int randomNumber = rand();
-    printf("Random number: %d\n", randomNumber);
-
-    // Generate and print a random number between 1 and 100
-    int min = 1;
-    int max = 100;
-    int rangedRandomNumber = (rand() % (max - min + 1)) + min;
-    return randNumber;
+// Initialize console for Unicode (cross-platform)
+void init_console() {
+    #ifdef _WIN32
+        _setmode(_fileno(stdout), _O_U16TEXT); // Windows
+    #else
+        setlocale(LC_ALL, "en_US.UTF-8"); // Mac/Linux
+    #endif
 }
 
-void intializeArr(int SIZEX, int SIZEY, char map[SIZEX][SIZEY]){
-    for (int i = 0; i < SIZEX; i++){
-        for (int j = 0; j < SIZEY; j++){
-            map[i][j] = ' ';
+// Print the game map
+void display_map() {
+    for (int i = 0; i < ROWS; i++) {
+        for (int j = 0; j < COLS; j++) {
+            wprintf(L"%lc", map[i][j]);
+        }
+        wprintf(L"\n");
+    }
+}
+
+int main() {
+    if (__APPLE__){
+        setlocale(LC_ALL, "en_US.UTF-8");
+    }
+    init_console(); // Set up Unicode output
+
+    int userCord[2] = {15, 9}; // Player position (row, col)
+    bool running = true;
+
+    while (running) {
+        display_map();
+
+        wchar_t input;
+        wprintf(L"Enter move (w/a/s/d) or '0' to quit: ");
+        wscanf(L" %lc", &input);
+
+        if (input == L'0') {
+            running = false;
+        } else {
+            // Move logic (simplified for example)
+            switch (input) {
+                case L'w': if (userCord[0] > 0) userCord[0]--; break;
+                case L's': if (userCord[0] < ROWS-1) userCord[0]++; break;
+                case L'a': if (userCord[1] > 0) userCord[1]--; break;
+                case L'd': if (userCord[1] < COLS-1) userCord[1]++; break;
+            }
         }
     }
-}
 
-void move(char moveInput, int currentCord[], int newCords[], int SIZEX, int SIZEY,char map[SIZEX][SIZEY]){
-    map[currentCord[0]][currentCord[1]] = ' '; 
-    newCords[0] = currentCord[0];
-    newCords[1] = currentCord[1];
-
-    switch(moveInput){
-        case 'a':
-            newCords[1] -= 1;
-            break;
-        case 'w':
-            newCords[0] -= 1;
-            break;
-        case 's':
-            newCords[0] += 1;
-            break;
-        case 'd':
-            newCords[1] += 1;
-            break;
-    }}
-
-
-
-
-
-void whereUser(int SIZEX, int SIZEY, char map[SIZEX][SIZEY], int userCord[2]){
-    map[userCord[0]][userCord[1]] = '<';
-}
-
-void whereItem(){};
-
-void whereWall(int SIZEX, int SIZEY, char map[SIZEX][SIZEY]){
-    //just some sample walls add here later garrett
-    map[0][0] = '-';
-    map[0][1] = '-';
-    map[0][2] = '-';
-    map[0][3] = '-';
-    map[0][4] = '-';
-    map[0][5] = '-';
-}
-
-void whereGhost(int ghostCord[8],int SIZEX, int SIZEY, char map[SIZEX][SIZEY]){
-for (int i = 0; i < 4; i++){
-    int ghostCord[8] = {7,10, 7,11, 7,9, 6,10}; // where ghosts are located
-}}
-
-
-
-void displayBoard(int SIZEX, int SIZEY, char map[SIZEX][SIZEY]){
-for(int i = 0; i<SIZEX; i++){
-for(int j = 0; j<SIZEY; j++){
-printf("%2c", map[i][j]);}
-printf("\n");
-}}
-
-
-//displays everything in the terminal once it runs through all the functions
-void displayALL(int SIZEX, int SIZEY, char map[SIZEX][SIZEY], int userCord[2], int ghostCord[8]){
-    whereUser(SIZEX, SIZEY,map, userCord);
-    whereItem();
-    whereWall(SIZEX, SIZEY, map);
-    whereGhost(ghostCord, SIZEX, SIZEY, map);
-    displayBoard(SIZEX, SIZEY,map);
-}
-
-
-
-void gameReact(){
-    //implement ghosts reacting 
-    //check where user is and if item has been picked up
-
-}
-
-
-int main(){
- //This is used to set the terminal so it can output unicode/16-bit characters
-
-const int SIZEX = 19;// Size of map X 
-const int SIZEY = 21;//Size of map Y
-int userDir = 0; // used to update DISPLAYUSER.
-const char DISPLAYUSER[4] = {'>', '<', '^', 'v'}; //displays what direction the user is facing
-char map[19][21];
-int userCord[2] = {10, 13}; //current space of the user
-bool run = true; //if this is false the game stops
-char userInput; // actual user input
-int newCord[2]; //returns new cord from move function
-int ghostCord[8] = {10,7, 11,7, 9,7, 10,6}; // where ghosts are located
-int GAMERUNTIME = 0; //tells ghosts when to start moving
-
-
-//malloc(map);
-intializeArr(SIZEX, SIZEY,map);
-while(run){
-    displayALL(SIZEX, SIZEY,map, userCord, ghostCord);
-    scanf(" %c", &userInput);
-    if( userInput == '0'){
-        run = false;
-    }
-    move(userInput, userCord, newCord, SIZEX, SIZEY,map);
-    userCord[0] = newCord[0];
-    userCord[1] = newCord[1];
-    gameReact();
-}
-
-
+    return 0;
 }
