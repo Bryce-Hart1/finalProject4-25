@@ -26,9 +26,9 @@ wchar_t map[rows][columns] = {
     {block, pellet, block, block, pellet, block, pellet, block, block, block, block, block, pellet, block, pellet, block, block, pellet, block},
     {block, pellet, pellet, pellet, pellet, block, pellet, pellet, pellet, block, pellet, pellet, pellet, block, pellet, pellet, pellet, pellet, block},
     {block, block, block, block, pellet, block, block, block, emptySpace, block, emptySpace, block, block, block, pellet, block, block, block, block},
-    {emptySpace, emptySpace, emptySpace, block, pellet, block, emptySpace, emptySpace, emptySpace, emptySpace, emptySpace, emptySpace, emptySpace, block, pellet, block, emptySpace, emptySpace, emptySpace}, //hufbrbhuebhrvbhkbhk
-    {block, block, block, block, pellet, block, emptySpace, block, block, emptySpace, block, block, emptySpace, block, pellet, block, block, block, block}, //LINE WHERE 1 GHOST SPAWNS
-    {emptySpace, emptySpace, emptySpace, emptySpace, pellet, emptySpace, emptySpace, block, emptySpace, emptySpace, emptySpace, block, emptySpace, emptySpace, pellet, emptySpace, emptySpace, emptySpace, emptySpace}, //LINE WHERE 3 GHOSTS SPAWN
+    {emptySpace, emptySpace, emptySpace, block, pellet, block, emptySpace, emptySpace, emptySpace, ghost, emptySpace, emptySpace, emptySpace, block, pellet, block, emptySpace, emptySpace, emptySpace},//LINE WHERE 1 GHOST SPAWNS
+    {block, block, block, block, pellet, block, emptySpace, block, block, emptySpace, block, block, emptySpace, block, pellet, block, block, block, block}, 
+    {emptySpace, emptySpace, emptySpace, emptySpace, pellet, emptySpace, emptySpace, block, ghost, ghost, ghost, block, emptySpace, emptySpace, pellet, emptySpace, emptySpace, emptySpace, emptySpace}, //LINE WHERE 3 GHOSTS SPAWN
     {block, block, block, block, pellet, block, emptySpace, block, block, block, block, block, emptySpace, block, pellet, block, block, block, block},
     {emptySpace, emptySpace, emptySpace, block, pellet, block, emptySpace, emptySpace, emptySpace, emptySpace, emptySpace, emptySpace, emptySpace, block, pellet, block, emptySpace, emptySpace, emptySpace},
     {block, block, block, block, pellet, block, emptySpace, block, block, block, block, block, emptySpace, block, pellet, block, block, block, block},
