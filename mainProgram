@@ -3,7 +3,6 @@
 #include <wchar.h>
 #include <fcntl.h>
 #include <stdlib.h>
-#include <io.h>
 
 const wchar_t block = L'█';
 const wchar_t characterUp = L'˅';
@@ -138,8 +137,7 @@ void gameReact(){
 
 
 int main(){
-
-_setmode(_fileno(stdout), _O_U16TEXT); //This is used to set the terminal so it can output unicode/16-bit characters
+ //This is used to set the terminal so it can output unicode/16-bit characters
 
 const int SIZEX = 19;// Size of map X 
 const int SIZEY = 21;//Size of map Y
