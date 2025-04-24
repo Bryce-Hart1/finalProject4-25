@@ -234,8 +234,8 @@ int main() {
         if (input == '0'){
             running = false;}
         display_map();
-        wprintf(L"Enter move (w/a/s/d) or '0' to quit: ");
-        wscanf(L" %lc", &input);
+        wprintf(L"Enter move (w/a/s/d) or '0' to quit: \n");
+        scanf("%c", &input);
         move(userCord, input);
 }
 return 0;
