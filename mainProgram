@@ -72,9 +72,9 @@ void display_map() {
 }
 
 int main() {
-    if (__APPLE__){
-        setlocale(LC_ALL, "en_US.UTF-8");
-    }
+#ifdef __APPLE__
+    setlocale(LC_ALL, "en_US.UTF-8");
+#endif
     init_console(); // Set up Unicode output
 
     int userCord[2] = {15, 9}; // Player position (row, col)
