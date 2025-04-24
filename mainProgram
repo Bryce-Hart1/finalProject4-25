@@ -56,13 +56,6 @@ int randNumber(){
     return randNumber;
 }
 
-void intializeArr(int SIZEX, int SIZEY, char GAMEBOARD[SIZEX][SIZEY]){
-    for (int i = 0; i < SIZEX; i++){
-        for (int j = 0; j < SIZEY; j++){
-            GAMEBOARD[i][j] = ' ';
-        }
-    }
-}
 
 void move(char moveInput, int currentCord[], int newCords[], int SIZEX, int SIZEY,char GAMEBOARD[SIZEX][SIZEY]){
     GAMEBOARD[currentCord[0]][currentCord[1]] = ' '; 
