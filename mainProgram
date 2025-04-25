@@ -159,6 +159,142 @@ void init_console() {
     #endif
 }
 
+int getRandomNumber() {
+    return rand() % 100 + 1; // returns a number between 1 and 100
+}
+
+void MoveRandDir(int ghostCord[]) {
+    int r = ghostCord[0];
+    int c = ghostCord[1];
+    int randomNumber = getRandomNumber() % 4;
+
+    while (true) {
+        if (randomNumber == 0 && !wallExists[r - 1][c]) {
+            ghostCord[0] = r - 1; break; // up
+        } else if (randomNumber == 1 && !wallExists[r + 1][c]) {
+            ghostCord[0] = r + 1; break; // down
+        } else if (randomNumber == 2 && !wallExists[r][c - 1]) {
+            ghostCord[1] = c - 1; break; // left
+        } else if (randomNumber == 3 && !wallExists[r][c + 1]) {
+            ghostCord[1] = c + 1; break; // right
+        } else {
+            randomNumber = getRandomNumber() % 4; // Try another direction
+        }
+    }
+}
+
+
+bool lineOfSight(int gr, int gc, char *moving) {
+    int i = gr, j = gc;
+
+    // Look down
+    while (!wallExists[i][j]) {
+        if (playerExist[i][j]) { *moving = 's'; return true; }
+        i++;
+    }
+
+    i = gr;
+    // Look up
+    while (!wallExists[i][j]) {
+        if (playerExist[i][j]) { *moving = 'w'; return true; }
+        i--;
+    }
+
+    i = gr; j = gc;
+    // Look right
+    while (!wallExists[i][j]) {
+        if (playerExist[i][j]) { *moving = 'd'; return true; }
+        j++;
+    }
+
+    j = gc;
+    // Look left
+    while (!wallExists[i][j]) {
+        if (playerExist[i][j]) { *moving = 'a'; return true; }
+        j--;
+    }
+
+    return false;
+}
+
+
+void ghostAI(int ghostCord[]){
+    char moving = 'a';
+    //play for all 4 ghosts
+    int lPlus = 0;
+    int rPlus = 0;
+    int uPlus = 0;
+    int dPlus = 0;
+
+    int precent;
+    int ghostRow, ghostCol;
+    for (int i = 0; i < 4; i++){
+        ghostRow = i+i;
+        ghostCol = 1 + i + i;
+        precent = getRandomNumber();
+        if(lineOfSight(ghostRow, ghostCol, moving)){ //if line of sight, move toward player
+            switch(moving){
+        case 'a': ghostCord[ghostCol] -= 1; break; //left
+        case 'w': ghostCord[ghostRow] -= 1; break; //up
+        case 's': ghostCord[ghostRow] += 1; break; //down
+        case 'd': ghostCord[ghostCol] += 1; break; //right
+        default: return;}
+        }else{
+            srand(time(NULL));
+            precent = getRandomNumber();
+            if(precent + uPlus > 75){
+                if(!wallExists[ghostCord[ghostRow]-1][ghostCord[ghostCol]]){
+                    ghostCord[ghostRow] -= 1; break; //up
+                    uPlus += 25; //adds 25% to the chance to move in the same direction
+                    rPlus = dPlus = lPlus = 0; // reset all other chances to 0
+                }
+            srand(time(NULL));
+            precent = getRandomNumber();
+            }else if(precent + dPlus > 75){
+                if(!wallExists[ghostCord[ghostRow]+1][ghostCord[ghostCol]]){
+                    ghostCord[ghostRow] += 1; break; //down
+                    dPlus += 25; //adds 25% to the chance to move in the same direction
+                    rPlus = uPlus = lPlus = 0; // reset all other chances to 0
+                }
+            }else if(precent + lPlus > 75){
+                if(!wallExists[ghostCord[ghostRow]][ghostCord[ghostCol]-1]){
+                    ghostCord[ghostRow] -= 1; break; //left
+                    dPlus += 25; //adds 25% to the chance to move in the same direction
+                    rPlus = uPlus = dPlus = 0; // reset all other chances to 0
+                }
+            }else if(precent + rPlus > 75){
+                if(!wallExists[ghostCord[ghostRow]][ghostCord[ghostCol]-1]){
+                    ghostCord[ghostRow] += 1; break; //right
+                    dPlus += 25; //adds 25% to the chance to move in the same direction
+                    lPlus = uPlus = dPlus = 0; // reset all other chances to 0
+                }
+        }else{
+            MoveRandDir(ghostCord);
+        }
+    }
+    
+    }
+
+    return;
+    }
+
+
+
+void moveGhosts(int ghostRow[], int ghostCol[], int runTime){
+switch(runTime){
+    case 1: //rows col
+        ghostExist[ghostCord[0]][ghostCord[1]] = false;
+        ghostExist[ghostCord[0]-1][ghostCord[1]] = true;
+        break;
+    case 2:
+        ghostExist[ghostCord[0]][ghostCord[1]] = false;
+        ghostExist[ghostCord[0]-1][ghostCord[1]] = true;
+}
+
+}
+
+
+
 
 void pelletCheck(int r, int c){
     if (pelletsExists[r][c] && playerExist[r][c]) {
@@ -218,13 +354,15 @@ int main() {
     setlocale(LC_ALL, "en_US.UTF-8");
 #endif
     init_console(); // Set up Unicode output
-
+    int ghostRow[4] = {8,9,9,9};
+    int ghostCol[4] = {9,9,8,10};
     int userCord[2] = {15, 9}; // Player start pos
     bool running = true;
-
+    int gameRunTime = 0;
 
 
     while (running){
+        gameRunTime++;
         char input;
         if (input == '0'){
             running = false;}
@@ -232,6 +370,7 @@ int main() {
         wprintf(L"Enter move (w/a/s/d) or '0' to quit: \n");
         scanf("%c", &input);
         move(userCord, input);
+        moveGhosts(ghostRow, ghostCol, gameRunTime);
 }
 return 0;
 }
