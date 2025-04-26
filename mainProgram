@@ -299,25 +299,25 @@ void ghostAI(int ghostrow[], int ghostcol[]) {
             precent = getRandomNumber();
 
             // Move up
-            if (precent + movementChance[0][i] > 75 && currentRow > 0 && !wallExists[currentRow - 1][currentCol]) {
+            if (precent + movementChance[0][i] > 75 && currentRow > 0 && !wallExists[currentRow - 1][currentCol] && !ghostExist[currentRow][currentCol]) {
                 updateGhost(currentRow, currentCol, currentRow - 1, currentCol);
                 updateChance(movementChance, movementChance[0][i], i);
                 ghostrow[i] -= 1;
             }
             // Move down
-            else if (precent + movementChance[1][i] > 75 && currentRow < ROWS - 1 && !wallExists[currentRow + 1][currentCol]) {
+            else if (precent + movementChance[1][i] > 75 && currentRow < ROWS - 1 && !wallExists[currentRow + 1][currentCol]&& !ghostExist[currentRow][currentCol]) {
                 updateGhost(currentRow, currentCol, currentRow + 1, currentCol);
                 updateChance(movementChance, movementChance[1][i], i);
                 ghostrow[i] += 1;
             }
             // Move left
-            else if (precent + movementChance[2][i] > 75 && currentCol > 0 && !wallExists[currentRow][currentCol - 1]) {
+            else if (precent + movementChance[2][i] > 75 && currentCol > 0 && !wallExists[currentRow][currentCol - 1] && !ghostExist[currentRow][currentCol]) {
                 updateGhost(currentRow, currentCol, currentRow, currentCol - 1);
                 updateChance(movementChance, movementChance[2][i], i);
                 ghostcol[i] -= 1;
             }
             // Move right
-            else if (precent + movementChance[3][i] > 75 && currentCol < COLS - 1 && !wallExists[currentRow][currentCol + 1]) {
+            else if (precent + movementChance[3][i] > 75 && currentCol < COLS - 1 && !wallExists[currentRow][currentCol + 1] && !ghostExist[currentRow][currentCol]){
                 updateGhost(currentRow, currentCol, currentRow, currentCol + 1);
                 updateChance(movementChance, movementChance[3][i], i);
                 ghostcol[i] += 1;
