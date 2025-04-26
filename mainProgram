@@ -411,6 +411,16 @@ void ghostDebug(){ //DELETE BEFORE SUMBITING FINAL
         }
     }
 }
+
+
+bool gameOvercheck(int userCord[]){
+    if(playerExist[userCord[0]][userCord[1]] && ghostExist[userCord[0]][userCord[1]]){
+        return true;
+        printf("Game over!");
+    }
+return false;
+}
+
 int main() {
 #ifdef __APPLE__
     setlocale(LC_ALL, "en_US.UTF-8");
