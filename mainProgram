@@ -412,6 +412,9 @@ void ghostDebug(){ //DELETE BEFORE SUMBITING FINAL
     }
 }
 
+void teleport(int beforeTeleportRow, int beforeTeleportCol){
+//add for ghosts and player
+}
 
 bool gameOvercheck(int userCord[]){
     if(playerExist[userCord[0]][userCord[1]] && ghostExist[userCord[0]][userCord[1]]){
