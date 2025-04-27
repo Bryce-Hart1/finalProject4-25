@@ -37,16 +37,16 @@ needed one for walls pellets powerpellets player and ghost (so 5). made walls co
 
 */
 const bool wallExists[ROWS][COLS] = {
-    {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+    {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},//0
     {1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1},
     {1,0,1,1,0,1,1,1,0,1,0,1,1,1,0,1,1,0,1},
     {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-    {1,0,1,1,0,1,0,1,1,1,1,1,0,1,0,1,1,0,1},
+    {1,0,1,1,0,1,0,1,1,1,1,1,0,1,0,1,1,0,1},//4
     {1,0,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,0,1},
     {1,1,1,1,0,1,1,1,0,1,0,1,1,1,0,1,1,1,1},
     {0,0,0,1,0,1,0,0,0,0,0,0,0,1,0,1,0,0,0},
     {1,1,1,1,0,1,0,1,1,0,1,1,0,1,0,1,1,1,1},
-    {0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0},//9
     {1,1,1,1,0,1,0,1,1,1,1,1,0,1,0,1,1,1,1},
     {0,0,0,1,0,1,0,0,0,0,0,0,0,1,0,1,0,0,0},
     {1,1,1,1,0,1,0,1,1,1,1,1,0,1,0,1,1,1,1},
@@ -212,28 +212,28 @@ bool lineOfSight(int currentRow, int currentCol, char *moving) {
     int i = currentRow, j = currentCol;
 
     // Look down
-    while (i >= 0 && i < ROWS && j >= 0 && j < COLS && !wallExists[i][j]){
+    while (i >= 0 && i < ROWS && j >= 0 && j < COLS && !wallExists[i][j] && !ghostExist[currentRow+1][currentCol]){
         if (playerExist[i][j]) { *moving = 's'; return true; }
         i++;
     }
 
     i = currentRow; //reset I
     // Look up
-    while (i >= 0 && i < ROWS && j >= 0 && j < COLS && !wallExists[i][j]){
+    while (i >= 0 && i < ROWS && j >= 0 && j < COLS && !wallExists[i][j] && !ghostExist[currentRow-1][currentCol]){
         if (playerExist[i][j]) { *moving = 'w'; return true; }
         i--;
     }
 
     i = currentRow; // reset I
     // Look right
-    while (i >= 0 && i < ROWS && j >= 0 && j < COLS && !wallExists[i][j]){
+    while (i >= 0 && i < ROWS && j >= 0 && j < COLS && !wallExists[i][j] && !ghostExist[currentRow][currentCol+1]){
         if (playerExist[i][j]) { *moving = 'd'; return true; }
         j++;
     }
 
     j = currentCol; //reset J
     // Look left
-    while (i >= 0 && i < ROWS && j >= 0 && j < COLS && !wallExists[i][j]){
+    while (i >= 0 && i < ROWS && j >= 0 && j < COLS && !wallExists[i][j] && !ghostExist[currentRow][currentCol-1]){
         if (playerExist[i][j]) { *moving = 'a'; return true; }
         j--;
     }
@@ -268,25 +268,25 @@ void ghostAI(int ghostrow[], int ghostcol[]) {
         if (lineOfSight(currentRow, currentCol, &moving)) { // If line of sight, move toward player
             switch (moving) {
                 case 'a': // Left
-                    if (currentCol > 0 && !wallExists[currentRow][currentCol - 1]) {
+                    if (currentCol > 0 && !wallExists[currentRow][currentCol - 1] || !ghostExist[currentRow][currentCol - 1]) {
                         updateGhost(currentRow, currentCol, currentRow, currentCol - 1);
                         ghostcol[i] -= 1;
                     }
                     break;
                 case 'w': // Up
-                    if (currentRow > 0 && !wallExists[currentRow - 1][currentCol]) {
+                    if (currentRow > 0 && !wallExists[currentRow - 1][currentCol] || !ghostExist[currentRow][currentCol - 1]) {
                         updateGhost(currentRow, currentCol, currentRow - 1, currentCol);
                         ghostrow[i] -= 1;
                     }
                     break;
                 case 's': // Down
-                    if (currentRow < ROWS - 1 && !wallExists[currentRow + 1][currentCol]) {
+                    if (currentRow < ROWS - 1 && !wallExists[currentRow + 1][currentCol] || !ghostExist[currentRow][currentCol - 1]) {
                         updateGhost(currentRow, currentCol, currentRow + 1, currentCol);
                         ghostrow[i] += 1;
                     }
                     break;
                 case 'd': // Right
-                    if (currentCol < COLS - 1 && !wallExists[currentRow][currentCol + 1]) {
+                    if (currentCol < COLS - 1 && !wallExists[currentRow][currentCol + 1] || !ghostExist[currentRow][currentCol - 1]) {
                         updateGhost(currentRow, currentCol, currentRow, currentCol + 1);
                         ghostcol[i] += 1;
                     }
@@ -356,7 +356,7 @@ void pelletCheck(int r, int c){
     }
 }
 
-void move(int userCord[], char moveInput){
+void movePlayer(int userCord[], char moveInput){
     int cr = userCord[0];
     int cc = userCord[1];
     int nr = cr, nc = cc;
@@ -386,14 +386,14 @@ void display_map(){
         for (int j = 0; j < COLS; j++){
             if(wallExists[i][j]){
                 wprintf(L"%lc", block);
-            }else if(pelletsExists[i][j]){
-                wprintf(L"%lc", pellet);}
-            else if(playerExist[i][j]){
+            }else if(playerExist[i][j]){
                 wprintf(L"%lc", characterRight);
             }else if(powerPelletExist[i][j]){
                 wprintf(L"%lc", powerPellet);
             }else if(ghostExist[i][j]){
                 wprintf(L"%lc", ghost);
+            }else if(pelletsExists[i][j]){
+                wprintf(L"%lc", pellet);
             }else{
                 wprintf(L"%lc", es);
             }
@@ -412,9 +412,24 @@ void ghostDebug(){ //DELETE BEFORE SUMBITING FINAL
     }
 }
 
-void teleport(int beforeTeleportRow, int beforeTeleportCol){
-//add for ghosts and player
+void teleportCheck(int userCord[], int ghostRow[], int ghostCol[]){
+    for (int i = 0; i < 5; i++){
+    if(ghostRow[i] == 9 && ghostCol[i] == 18 && i < 4 && !ghostExist[9][18]){
+        ghostCol[i] = 0;
+    }
+    if(ghostRow[i] == 9 && ghostCol[i] == 0 && i < 4&& !ghostExist[9][18]){
+        ghostCol[i] = 18;
+    }
+    if(userCord[i] == 9 && userCord[i] == 18 && i < 4){
+        ghostCol[i] = 0;
+    }
+    if(userCord[0] == 9 && userCord[1] == 0 && i < 4){
+        ghostCol[i] = 18;
+    }}
+
+//should work for ghost and player
 }
+
 
 bool gameOvercheck(int userCord[]){
     if(playerExist[userCord[0]][userCord[1]] && ghostExist[userCord[0]][userCord[1]]){
@@ -435,18 +450,19 @@ int main() {
     bool running = true;
     int gameRunTime = 0;
 
-
-    while (running){
+    while (running && !gameOvercheck(userCord)){
         gameRunTime++;
         char input;
         if (input == '0'){
             running = false;}
         display_map();
         wprintf(L"Enter move (w/a/s/d) or '0' to quit: \n");
-        ghostDebug();
+        //ghostDebug();
         scanf("%c", &input);
-        move(userCord, input);
+        movePlayer(userCord, input);
         Parentfunct_moveGhosts(ghostRow, ghostCol, gameRunTime);
+        teleportCheck(userCord, ghostRow, ghostCol);
+        
 }
 return 0;
 }
