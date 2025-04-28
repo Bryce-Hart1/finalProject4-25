@@ -477,12 +477,7 @@ void resetGame(int userCord[], int ghostRow[], int ghostCol[])
 
 bool switchPowerPellet = false;
 
-
-
-
-
-
-bool powerPelletActive(int gameRunTime, int userCord[]){
+bool powerPelletActive(int gameRunTime, int userCord[], int ghostRow[], int ghostColumn[], int *score){
     int powerPelletActiveFor; 
     if(playerExist[userCord[0]][userCord[1]] && powerPelletExist[userCord[0]][userCord[1]]){
         switchPowerPellet = true;
@@ -494,6 +489,12 @@ bool powerPelletActive(int gameRunTime, int userCord[]){
     }
     if(powerPelletActiveFor > 0){
         //do what powerpellet does
+        if (playerExist[userCord[0]][userCord[1]] == ghostExist[userCord[0]][userCord[1]])
+        {
+            *score += 800;
+            ghostExist[userCord[0]][userCord[1]] = false;
+            ghostExist[9][9] = true;
+        }
         powerPelletActiveFor--;
     }
 
