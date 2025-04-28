@@ -89,8 +89,8 @@ bool pelletsExists[ROWS][COLS] = {
     {0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0},
     {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
 };
-bool powerPelletExist[ROWS][COLS] = {
-    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+bool powerPelletExist[ROWS][COLS] = {       //[2][1]   [2][17]   [15][1]   [15][17]
+    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}, 
     {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
     {0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0},
     {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
@@ -365,7 +365,18 @@ void pelletCheck(int r, int c, int *score, int *pelletNo){
     }
 }
 
-void movePlayer(int userCord[], char moveInput, int *score, int *pelletNo){
+void powerPelletCheck(int r, int c, int *score, int *powPelletNo)
+{
+    if (powerPelletExist[r][c] && playerExist[r][c]) //you can move up to 12 tiles while true
+    {
+        powerPelletExist[r][c] = false;
+        *score += 250;
+        *powPelletNo -= 1;
+
+    }
+}
+
+void movePlayer(int userCord[], char moveInput, int *score, int *pelletNo, int *powPelletNo){
     int cr = userCord[0];
     int cc = userCord[1];
     int nr = cr, nc = cc;
@@ -385,6 +396,7 @@ void movePlayer(int userCord[], char moveInput, int *score, int *pelletNo){
         userCord[0] = nr;
         userCord[1] = nc;
         pelletCheck(nr, nc, score, pelletNo);
+        powerPelletCheck(nr, nc, score, powPelletNo);
     }// player will not move
 }
 
@@ -484,14 +496,26 @@ void resetGame(int userCord[], int ghostRow[], int ghostCol[])
     ghostCol[3] = 10;
 }
 
-bool gameOvercheck(int userCord[], int *lives, int ghostRow[], int ghostCol[], int *pelletNo, int score){
+bool powerPelletActive()
+{
+    if (powerPelletActive)
+    {
+        /* code */
+    }
+    
+
+
+    return false;
+}
+
+bool gameOvercheck(int userCord[], int *lives, int ghostRow[], int ghostCol[], int *pelletNo, int score, int *powPelletNo){
     if(playerExist[userCord[0]][userCord[1]] && ghostExist[userCord[0]][userCord[1]]){
         *lives -= 1;
         wprintf(L"You died! You have %d lives left!\n", *lives);
         resetGame(userCord, ghostRow, ghostCol);
     }
 
-    if (*pelletNo == 0)
+    if (*pelletNo == 0 && powPelletNo == 0)
     {
         wprintf(L"\nYou collected all of the pellets. You Win!\nYour final score is: %d", score);
         return true;
@@ -503,7 +527,7 @@ bool gameOvercheck(int userCord[], int *lives, int ghostRow[], int ghostCol[], i
        return true;
     }
     
-return false;
+    return false;
 }
 
 int main() {
@@ -516,21 +540,28 @@ int main() {
     int userCord[2] = {15, 9}; // Player start pos y,x
     bool running = true;
     int gameRunTime = 0;
-    int score = 0;
+    int score = 0; //14,600 for pellets, 1,000 for 4 power pellets (250), 800 for each ghost killed
     int lives = 3;
     int pelletNo = 146;
+    int powPelletNo = 4;
+    int powPelletTicks = 0; //12 ticks(moves) are added when a power pellet is used
 
-    while (running && !gameOvercheck(userCord, &lives, ghostRow, ghostCol, &pelletNo, score)){
+    while (running && !gameOvercheck(userCord, &lives, ghostRow, ghostCol, &pelletNo, score, &powPelletNo)){
         gameRunTime++;
         char input;
         display_map();
         wprintf(L"SCORE: %d   LIVES: %d\n", score, lives);
         wprintf(L"Enter move (w/a/s/d) or '0' to quit: \n");
+        if (powPelletTicks > 0)
+        {
+            wprintf(L"POWER PELLET ACTIVE! %d MOVE(S) LEFT!", powPelletTicks);
+        }
+        
         //ghostDebug();
         scanf(" %c", &input);
         if (input == '0'){
             running = false;}
-        movePlayer(userCord, input, &score, &pelletNo);
+        movePlayer(userCord, input, &score, &pelletNo, &powPelletNo);
         Parentfunct_moveGhosts(ghostRow, ghostCol, gameRunTime);
         teleportCheck(userCord, ghostRow, ghostCol);
         
