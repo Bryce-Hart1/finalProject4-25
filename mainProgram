@@ -1,3 +1,11 @@
+//############ TODO LIST:
+/*
+
+    I got the "you win" and "game over" screens working, just need to add power pellets and add power pellets to the score
+    power pellets + win condition including power pellets
+    Ghosts can teleport in tunnels (honestly optional, i dont think it would be a big deal bc it seems like a pain)
+*/
+
 #include <stdio.h>
 #include <stdbool.h>
 #include <wchar.h>
@@ -348,15 +356,16 @@ if(runTime < 5){
 }
 
 
+void pelletCheck(int r, int c, int *score, int *pelletNo){
 
-
-void pelletCheck(int r, int c){
     if (pelletsExists[r][c] && playerExist[r][c]) {
         pelletsExists[r][c] = false; // Player picked up pellet
+        *score += 100;
+        *pelletNo -= 1;
     }
 }
 
-void movePlayer(int userCord[], char moveInput){
+void movePlayer(int userCord[], char moveInput, int *score, int *pelletNo){
     int cr = userCord[0];
     int cc = userCord[1];
     int nr = cr, nc = cc;
@@ -375,7 +384,7 @@ void movePlayer(int userCord[], char moveInput){
         playerExist[nr][nc] = true;  // Set new position
         userCord[0] = nr;
         userCord[1] = nc;
-        pelletCheck(nr, nc);
+        pelletCheck(nr, nc, score, pelletNo);
     }// player will not move
 }
 
@@ -433,7 +442,6 @@ void teleportCheck(int userCord[], int ghostRow[], int ghostCol[]){
         userCord[0] = 9;
         userCord[1] = 17;
         playerExist[9][0] = false;
-
     }
     else if (userCord[0] == 9 && userCord[1] == 18)
     {
@@ -446,12 +454,55 @@ void teleportCheck(int userCord[], int ghostRow[], int ghostCol[]){
 //should work for ghost and player, if [9][1] or [9][19]
 }
 
-
-bool gameOvercheck(int userCord[]){
-    if(playerExist[userCord[0]][userCord[1]] && ghostExist[userCord[0]][userCord[1]]){
-        return true;
-        printf("Game over!");
+void resetGame(int userCord[], int ghostRow[], int ghostCol[])
+{
+    for (int i = 0; i < COLS; i++) {
+        for (int j = 0; j < ROWS; j++) {
+            playerExist[i][j] = false;
+            ghostExist[i][j] = false;
+        }
     }
+
+    playerExist[15][9] = true;
+
+    ghostExist[8][9] = true;
+    ghostExist[9][9] = true;
+    ghostExist[9][8] = true;
+    ghostExist[9][10] = true;
+
+    userCord[0] = 15;
+    userCord[1] = 9;
+
+    ghostRow[0] = 8;
+    ghostRow[1] = 9;
+    ghostRow[2] = 9;
+    ghostRow[3] = 9;
+
+    ghostCol[0] = 9;
+    ghostCol[1] = 9;
+    ghostCol[2] = 8;
+    ghostCol[3] = 10;
+}
+
+bool gameOvercheck(int userCord[], int *lives, int ghostRow[], int ghostCol[], int pelletNo, int score){
+    if(playerExist[userCord[0]][userCord[1]] && ghostExist[userCord[0]][userCord[1]]){
+        *lives -= 1;
+        wprintf(L"You died! You have %d lives left!\n", *lives);
+        resetGame(userCord, ghostRow, ghostCol);
+    }
+
+    if (pelletNo == 0)
+    {
+        wprintf(L"\n You collected all of the pellets. You Win!\nYour final score is: %d", score);
+        return true;
+    } 
+
+    if (*lives == 0)
+    {
+       wprintf(L"\nGAME OVER!");
+       return true;
+    }
+    
 return false;
 }
 
@@ -465,17 +516,21 @@ int main() {
     int userCord[2] = {15, 9}; // Player start pos y,x
     bool running = true;
     int gameRunTime = 0;
+    int score = 0;
+    int lives = 3;
+    int pelletNo = 146;
 
-    while (running && !gameOvercheck(userCord)){
+    while (running && !gameOvercheck(userCord, &lives, ghostRow, ghostCol, pelletNo, score)){
         gameRunTime++;
         char input;
-        if (input == '0'){
-            running = false;}
         display_map();
+        wprintf(L"SCORE: %d   LIVES: %d\n", score, lives);
         wprintf(L"Enter move (w/a/s/d) or '0' to quit: \n");
         //ghostDebug();
-        scanf("%c", &input);
-        movePlayer(userCord, input);
+        scanf(" %c", &input);
+        if (input == '0'){
+            running = false;}
+        movePlayer(userCord, input, &score, &pelletNo);
         Parentfunct_moveGhosts(ghostRow, ghostCol, gameRunTime);
         teleportCheck(userCord, ghostRow, ghostCol);
         
