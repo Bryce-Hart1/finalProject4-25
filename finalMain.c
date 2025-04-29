@@ -338,8 +338,6 @@ void ghostAI(int ghostrow[], int ghostcol[]) {
     }
 }
 
-
-
 // for the first couple turns, move the ghosts out individually.
 void Parentfunct_moveGhosts(int ghostRow[], int ghostCol[], int runTime){
 if(runTime < 5){
@@ -355,8 +353,6 @@ if(runTime < 5){
     ghostAI(ghostRow, ghostCol); //AI takes over
 }     
 }
-
-
 
 void movePlayer(int userCord[], char moveInput, int *score){
     int cr = userCord[0];
@@ -462,11 +458,6 @@ void resetGame(int userCord[], int ghostRow[], int ghostCol[])
 
 bool switchPowerPellet = false;
 
-
-
-
-
-
 void powerPelletActive(int gameRunTime, int userCord[], int *score, int ghostRow[], int ghostCol[]){
     int i = userCord[0];
     int j = userCord[1]; //Check these, they just define userRow and userCol
@@ -503,16 +494,13 @@ void powerPelletActive(int gameRunTime, int userCord[], int *score, int ghostRow
 }
 
 bool allPelletsCollected(){
-        for (int i = 0; i < ROWS; i++){
+    for (int i = 0; i < ROWS; i++){
         for (int j = 0; j < COLS; j++){
-            if(powerPelletExist[i][j]){
-                return false;
-            if(pelletsExists[i][j]){
+            if (powerPelletExist[i][j] || pelletsExists[i][j]) {
                 return false;
             }
             }
         }
-    }
     return true;
 }
 
@@ -523,7 +511,12 @@ bool gameOvercheck(int userCord[], int *lives, int ghostRow[], int ghostCol[],in
         resetGame(userCord, ghostRow, ghostCol);
     }
 
-
+    if (allPelletsCollected())
+    {
+        wprintf(L"You Win! Your final score is: %d\n", score);
+        return true;
+    }
+    
     if (*lives == 0)
     {
        wprintf(L"\nGAME OVER!\n");
