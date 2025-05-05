@@ -505,5 +505,7 @@ int main() {
         powerPelletFunction(gameRunTime, userCord, ghostRow, ghostCol);
 }
     display_map(lives, gameRunTime); //Display Map one more time
+    printf("\n|  Final Score: %d  |", score);
+
 return 0;
 }
