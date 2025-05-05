@@ -1,10 +1,11 @@
 #include <stdio.h>
-#include <stdbool.h>
 #include <wchar.h>
 #include <stdlib.h>
 #include <time.h>
 #include <locale.h>
-
+typedef int bool;
+#define false 0
+#define true 1
 /*
 we were having issues with how unicode prints on windows compared to windows.
 This program has only been tested for the following terminals: zsh, powershell
@@ -315,18 +316,29 @@ void movePlayer(int userCord[], char moveInput){
     }
 }
 void bottomText(int gameRunTime){
-    if(!powerPelletIsOn){
-        printf("[A/W/S/D, 0 to quit]");
+    int messageLinesToAdd = ((22 - powerPelletActiveFor) / 2);
+    char messageToDisplay[ROWS] = " FREEZE ACTIVE "; // message displayed at the bottom
+    char messagePowerPelletOn[ROWS];
+    if(!powerPelletIsOn && (gameRunTime % 10) > 5){
+        printf("|A/W/S/D, 0 to quit|");
         return;
-    }else if(powerPelletIsOn && powerPelletActiveFor > 13){
-        printf("|||POWERPELLET ON|||");
-        return;
-    }else if(powerPelletIsOn && powerPelletActiveFor > 7){
-        printf(" ||POWERPELLET ON|| ");
-        return;}
-    else if(powerPelletIsOn && powerPelletActiveFor > 3){
-        printf("  |POWERPELLET ON|  ");
-        return;}}
+    }else if(powerPelletIsOn && powerPelletActiveFor > 0){
+        for(int i = 0; i < ROWS; i++){
+            if(messageLinesToAdd > 0){
+                messageToDisplay[i] = '|';
+                messageToDisplay[ROWS-i] = '|';
+                messageLinesToAdd--;
+            }
+        }
+        for(int j = 0; j < ROWS; j++){
+            printf("%c", messageToDisplay[j]);
+        }
+    }else{
+        printf("| Current turn: %d |", gameRunTime);
+    }
+
+    
+}
 
 void display_map(int lives, int gameRunTime){ // prints map
     for (int i = 0; i < ROWS; i++) {
