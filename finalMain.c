@@ -1,11 +1,3 @@
-//############ TODO LIST:
-/*
-
-    I got the "you win" and "game over" screens working, just need to add power pellets and add power pellets to the score
-    power pellets + win condition including power pellets
-    Ghosts can teleport in tunnels (honestly optional, i dont think it would be a big deal bc it seems like a pain)
-*/
-
 #include <stdio.h>
 #include <stdbool.h>
 #include <wchar.h>
@@ -39,11 +31,11 @@ bool powerPelletIsOn = false;
 int powerPelletActiveFor = 0; // how many more turns powerPellet is active for
 #define ROWS 21
 #define COLS 19
+int totalPlayerScore = 0;
 
 /*
 we then made true false arrays for all items. this makes everything very simple to keep up with
 needed one for walls pellets powerpellets player and ghost (so 5). made walls const so that way the wall cannot be replaced.
-
 */
 const bool wallExists[ROWS][COLS] = {
     {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},//0
@@ -172,8 +164,6 @@ int getRandomNumber() {
     return rand() % 100 + 1; // returns a number between 1 and 100
 }
 
-
-
 void updateGhost(int oldRow, int oldCol, int newRow, int newCol) {
     ghostExist[oldRow][oldCol] = false;
     ghostExist[newRow][newCol] = true;
@@ -219,29 +209,25 @@ void MoveRandDir(int *ghostrow, int *ghostcol) {
 
 bool lineOfSight(int currentRow, int currentCol, char *moving) {
     int i = currentRow, j = currentCol;
-
     // Look down
     while (i >= 0 && i < ROWS && j >= 0 && j < COLS && !wallExists[i][j] && !ghostExist[currentRow+1][currentCol]){
         if (playerExist[i][j]) { *moving = 's'; return true; }
         i++;
     }
 
-    i = currentRow; //reset I
-    // Look up
+    i = currentRow; //reset I look up
     while (i >= 0 && i < ROWS && j >= 0 && j < COLS && !wallExists[i][j] && !ghostExist[currentRow-1][currentCol]){
         if (playerExist[i][j]) { *moving = 'w'; return true; }
         i--;
     }
 
-    i = currentRow; // reset I
-    // Look right
+    i = currentRow; // reset I look right
     while (i >= 0 && i < ROWS && j >= 0 && j < COLS && !wallExists[i][j] && !ghostExist[currentRow][currentCol+1]){
         if (playerExist[i][j]) { *moving = 'd'; return true; }
         j++;
     }
 
-    j = currentCol; //reset J
-    // Look left
+    j = currentCol; //reset J look left
     while (i >= 0 && i < ROWS && j >= 0 && j < COLS && !wallExists[i][j] && !ghostExist[currentRow][currentCol-1]){
         if (playerExist[i][j]) { *moving = 'a'; return true; }
         j--;
@@ -354,7 +340,7 @@ if(runTime < 5){
 }     
 }
 
-void movePlayer(int userCord[], char moveInput, int *score){
+void movePlayer(int userCord[], char moveInput){
     int cr = userCord[0];
     int cc = userCord[1];
     int nr = cr, nc = cc;
@@ -370,7 +356,10 @@ void movePlayer(int userCord[], char moveInput, int *score){
     // Check bounds and wall
     if (nr >= 0 && nr < ROWS && nc >= 0 && nc < COLS && !wallExists[nr][nc]) {
         playerExist[cr][cc] = false; // Clear old position
-        playerExist[nr][nc] = true;  // Set new position
+        playerExist[nr][nc] = true;// Set new position
+        if(pelletsExists[nr][nc]){
+            totalPlayerScore++;
+        }
         pelletsExists[nr][nc] = false;
         userCord[0] = nr;
         userCord[1] = nc;
@@ -379,7 +368,7 @@ void movePlayer(int userCord[], char moveInput, int *score){
 
 // Print the game map this will do all chars. this will always print the map
 //you do not need to do == true
-void display_map(){
+void display_map(int lives){
     for (int i = 0; i < ROWS; i++) {
         for (int j = 0; j < COLS; j++){
             if(wallExists[i][j]){
@@ -398,16 +387,8 @@ void display_map(){
         }
         wprintf(L"\n");
     }
-}
-
-void ghostDebug(){ //DELETE BEFORE SUMBITING FINAL
-    for (int i = 0; i < ROWS;i++){
-        for (int j = 0; j < COLS;j++){
-            if(ghostExist[i][j]){
-                printf("ghost at %d, %d\n", i,j);
-            }
-        }
-    }
+        wprintf(L"SCORE: %d   LIVES: %d\n", totalPlayerScore, lives);
+        wprintf(L"Enter move (w/a/s/d) or '0' to quit: \n"); 
 }
 
 void teleportCheck(int userCord[], int ghostRow[], int ghostCol[]){
@@ -458,7 +439,7 @@ void resetGame(int userCord[], int ghostRow[], int ghostCol[])
 
 bool switchPowerPellet = false;
 
-void powerPelletActive(int gameRunTime, int userCord[], int *score, int ghostRow[], int ghostCol[]){
+void powerPelletActive(int gameRunTime, int userCord[], int ghostRow[], int ghostCol[]){
     int i = userCord[0];
     int j = userCord[1]; //Check these, they just define userRow and userCol
     if(playerExist[i][j] && powerPelletExist[i][j]){
@@ -473,7 +454,7 @@ void powerPelletActive(int gameRunTime, int userCord[], int *score, int ghostRow
     if(powerPelletActiveFor > 0){
         if(ghostExist[userCord[0]][userCord[1]] && playerExist[userCord[0]][userCord[1]]){
             //ghost dies
-            *score += 400;
+            totalPlayerScore += 400;
             ghostExist[userCord[0]][userCord[1]] = false;
             ghostExist[9][9] = true;
             for (int a = 0; a < 4; a++){ // check to see what ghost the player killed
@@ -504,7 +485,7 @@ bool allPelletsCollected(){
     return true;
 }
 
-bool gameOvercheck(int userCord[], int *lives, int ghostRow[], int ghostCol[],int score){
+bool gameOvercheck(int userCord[], int *lives, int ghostRow[], int ghostCol[]){
     if(playerExist[userCord[0]][userCord[1]] && ghostExist[userCord[0]][userCord[1]] && !powerPelletIsOn){
         *lives -= 1;
         wprintf(L"You died! You have %d lives left!\n", *lives);
@@ -513,7 +494,7 @@ bool gameOvercheck(int userCord[], int *lives, int ghostRow[], int ghostCol[],in
 
     if (allPelletsCollected())
     {
-        wprintf(L"You Win! Your final score is: %d\n", score);
+        wprintf(L"You Win! Your final score is: %d\n", totalPlayerScore);
         return true;
     }
     
@@ -540,21 +521,19 @@ int main() {
     int lives = 3;
     int powerPelletActiveFor = 0; //12 ticks(moves) are added when a power pellet is used
 
-    while (running && !gameOvercheck(userCord, &lives, ghostRow, ghostCol, score)){
+    while (running && !gameOvercheck(userCord, &lives, ghostRow, ghostCol)){
         gameRunTime++;
         char input;
-        display_map();
-        wprintf(L"SCORE: %d   LIVES: %d\n", score, lives);
-        wprintf(L"Enter move (w/a/s/d) or '0' to quit: \n"); 
+        display_map(lives);
         //ghostDebug();
         scanf(" %c", &input);
         if (input == '0'){
             running = false;}
-        movePlayer(userCord, input, &score);
+        movePlayer(userCord, input);
         Parentfunct_moveGhosts(ghostRow, ghostCol, gameRunTime);
         teleportCheck(userCord, ghostRow, ghostCol);
-        powerPelletActive(gameRunTime, userCord, &score, ghostRow, ghostCol);
-        
+        powerPelletActive(gameRunTime, userCord, ghostRow, ghostCol);
 }
+    display_map(lives);
 return 0;
 }
