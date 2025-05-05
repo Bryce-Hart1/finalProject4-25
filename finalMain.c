@@ -162,7 +162,7 @@ void init_console() {
 }
 
 int getRandomNumber() {
-    return rand() % 100 + 1; // returns a number between 1 and 100
+    return rand() % 100 + 1;
 }
 
 void updateGhost(int oldRow, int oldCol, int newRow, int newCol) {
@@ -170,175 +170,112 @@ void updateGhost(int oldRow, int oldCol, int newRow, int newCol) {
     ghostExist[newRow][newCol] = true;
 }
 
-
 void MoveRandDir(int *ghostrow, int *ghostcol) {
-    int oldRow = *ghostrow;
-    int oldCol = *ghostcol;
-    int randomNumber = getRandomNumber() % 4;
-    int attempts = 0; // Track how many times we attempt to find a valid move
+    int oldRow = *ghostrow, oldCol = *ghostcol;
+    int directions[4][2] = {{-1,0}, {1,0}, {0,-1}, {0,1}}; // Up, Down, Left, Right
+    int tries[4] = {0, 1, 2, 3};
 
-    while (attempts < 10) { // Limit number of attempts to prevent infinite loop
-        if (randomNumber == 0 && *ghostrow > 0 && !wallExists[*ghostrow - 1][*ghostcol] && !ghostExist[*ghostrow - 1][*ghostcol]) {
-            (*ghostrow) -= 1; // move up
-            break;
-        } else if (randomNumber == 1 && *ghostrow < ROWS - 1 && !wallExists[*ghostrow + 1][*ghostcol] && !ghostExist[*ghostrow + 1][*ghostcol]) {
-            (*ghostrow) += 1; // move down
-            break;
-        } else if (randomNumber == 2 && *ghostcol > 0 && !wallExists[*ghostrow][*ghostcol - 1] && !ghostExist[*ghostrow][*ghostcol - 1]) {
-            (*ghostcol) -= 1; // move left
-            break;
-        } else if (randomNumber == 3 && *ghostcol < COLS - 1 && !wallExists[*ghostrow][*ghostcol + 1] && !ghostExist[*ghostrow][*ghostcol + 1]) {
-            (*ghostcol) += 1; // move right
-            break;
-        } else {
-            randomNumber = getRandomNumber() % 4; // Try another direction
-        }
-
-        attempts++; // Increment attempts counter
+    // Shuffle directions
+    for (int i = 3; i > 0; i--) {
+        int j = rand() % (i + 1);
+        int temp = tries[i];
+        tries[i] = tries[j];
+        tries[j] = temp;
     }
 
-    // Update ghost positions in ghostExist array, if the ghost moved
-    if (attempts < 10) {
-        ghostExist[oldRow][oldCol] = false;  // Clear old position
-        ghostExist[*ghostrow][*ghostcol] = true;  // Set new position
+    for (int k = 0; k < 4; k++) {
+        int d = tries[k];
+        int newRow = *ghostrow + directions[d][0];
+        int newCol = *ghostcol + directions[d][1];
+
+        if (newRow >= 0 && newRow < ROWS && newCol >= 0 && newCol < COLS &&
+            !wallExists[newRow][newCol] && !ghostExist[newRow][newCol]) {
+            *ghostrow = newRow;
+            *ghostcol = newCol;
+            updateGhost(oldRow, oldCol, newRow, newCol);
+            return;
+        }
     }
 }
 
+bool lineOfSight(int r, int c, char *moving) {
+    int dr[4] = {1, -1, 0, 0}, dc[4] = {0, 0, 1, -1};
+    char dirChar[4] = {'s', 'w', 'd', 'a'};
 
-
-
-
-bool lineOfSight(int currentRow, int currentCol, char *moving) {
-    int i = currentRow, j = currentCol;
-    // Look down
-    while (i >= 0 && i < ROWS && j >= 0 && j < COLS && !wallExists[i][j] && !ghostExist[currentRow+1][currentCol]){
-        if (playerExist[i][j]) { *moving = 's'; return true; }
-        i++;
+    for (int d = 0; d < 4; d++) {
+        int i = r + dr[d], j = c + dc[d];
+        while (i >= 0 && i < ROWS && j >= 0 && j < COLS && !wallExists[i][j]) {
+            if (playerExist[i][j]) {
+                *moving = dirChar[d];
+                return true;
+            }
+            i += dr[d];
+            j += dc[d];
+        }
     }
-
-    i = currentRow; //reset I look up
-    while (i >= 0 && i < ROWS && j >= 0 && j < COLS && !wallExists[i][j] && !ghostExist[currentRow-1][currentCol]){
-        if (playerExist[i][j]) { *moving = 'w'; return true; }
-        i--;
-    }
-
-    i = currentRow; // reset I look right
-    while (i >= 0 && i < ROWS && j >= 0 && j < COLS && !wallExists[i][j] && !ghostExist[currentRow][currentCol+1]){
-        if (playerExist[i][j]) { *moving = 'd'; return true; }
-        j++;
-    }
-
-    j = currentCol; //reset J look left
-    while (i >= 0 && i < ROWS && j >= 0 && j < COLS && !wallExists[i][j] && !ghostExist[currentRow][currentCol-1]){
-        if (playerExist[i][j]) { *moving = 'a'; return true; }
-        j--;
-    }
-
     return false;
 }
 
 void updateChance(int chanceArray[4][4], int numberToChange, int colNum) {
     for (int i = 0; i < 4; i++) {
-        if (chanceArray[i][colNum] == numberToChange) {
-            chanceArray[i][colNum] += 25;
-        } else {
-            chanceArray[i][colNum] = 0;
-        }
+        chanceArray[i][colNum] = (chanceArray[i][colNum] == numberToChange)
+                                 ? chanceArray[i][colNum] + 25 : 0;
     }
 }
 
 void ghostAI(int ghostrow[], int ghostcol[]) {
-    int currentRow, currentCol, precent;
-    int movementChance[4][4] = {{0, 0, 0, 0}, // Up
-                                {0, 0, 0, 0}, // Down
-                                {0, 0, 0, 0}, // Left
-                                {0, 0, 0, 0}}; // Right
-    char moving = 'a'; // Direction ghost has been moving
+    int movementChance[4][4] = {{0}}; // [direction][ghostIndex]
+    int dr[4] = {-1, 1, 0, 0}; // U, D, L, R
+    int dc[4] = {0, 0, -1, 1};
+    char dirChar[4] = {'w', 's', 'a', 'd'};
 
-    for (int i = 0; i < 4; i++) { // Play for all 4 ghosts
-        precent = getRandomNumber();
-        currentRow = ghostrow[i];
-        currentCol = ghostcol[i];
+    for (int i = 0; i < 4; i++) {
+        int r = ghostrow[i], c = ghostcol[i];
+        char moveDir;
+        int chance = getRandomNumber();
 
-        // Check line of sight and move toward player if possible
-        if (lineOfSight(currentRow, currentCol, &moving)) { // If line of sight, move toward player
-            switch (moving) {
-                case 'a': // Left
-                    if (currentCol > 0 && !wallExists[currentRow][currentCol - 1] || !ghostExist[currentRow][currentCol - 1]) {
-                        updateGhost(currentRow, currentCol, currentRow, currentCol - 1);
-                        ghostcol[i] -= 1;
+        if (lineOfSight(r, c, &moveDir)) {
+            for (int d = 0; d < 4; d++) {
+                if (dirChar[d] == moveDir) {
+                    int nr = r + dr[d], nc = c + dc[d];
+                    if (nr >= 0 && nr < ROWS && nc >= 0 && nc < COLS &&
+                        !wallExists[nr][nc] && !ghostExist[nr][nc]) {
+                        updateGhost(r, c, nr, nc);
+                        ghostrow[i] = nr;
+                        ghostcol[i] = nc;
                     }
                     break;
-                case 'w': // Up
-                    if (currentRow > 0 && !wallExists[currentRow - 1][currentCol] || !ghostExist[currentRow][currentCol - 1]) {
-                        updateGhost(currentRow, currentCol, currentRow - 1, currentCol);
-                        ghostrow[i] -= 1;
-                    }
-                    break;
-                case 's': // Down
-                    if (currentRow < ROWS - 1 && !wallExists[currentRow + 1][currentCol] || !ghostExist[currentRow][currentCol - 1]) {
-                        updateGhost(currentRow, currentCol, currentRow + 1, currentCol);
-                        ghostrow[i] += 1;
-                    }
-                    break;
-                case 'd': // Right
-                    if (currentCol < COLS - 1 && !wallExists[currentRow][currentCol + 1] || !ghostExist[currentRow][currentCol - 1]) {
-                        updateGhost(currentRow, currentCol, currentRow, currentCol + 1);
-                        ghostcol[i] += 1;
-                    }
-                    break;
-                default:
-                    return;
+                }
             }
-        } else { // If no line of sight, move randomly
-            srand(time(NULL)); // Seed the random generator
-            precent = getRandomNumber();
-
-            // Move up
-            if (precent + movementChance[0][i] > 75 && currentRow > 0 && !wallExists[currentRow - 1][currentCol] && !ghostExist[currentRow][currentCol]) {
-                updateGhost(currentRow, currentCol, currentRow - 1, currentCol);
-                updateChance(movementChance, movementChance[0][i], i);
-                ghostrow[i] -= 1;
+        } else {
+            for (int d = 0; d < 4; d++) {
+                int nr = r + dr[d], nc = c + dc[d];
+                if (nr >= 0 && nr < ROWS && nc >= 0 && nc < COLS &&
+                    !wallExists[nr][nc] && !ghostExist[nr][nc] &&
+                    chance + movementChance[d][i] > 75) {
+                    updateGhost(r, c, nr, nc);
+                    ghostrow[i] = nr;
+                    ghostcol[i] = nc;
+                    updateChance(movementChance, movementChance[d][i], i);
+                    goto next_ghost;
+                }
             }
-            // Move down
-            else if (precent + movementChance[1][i] > 75 && currentRow < ROWS - 1 && !wallExists[currentRow + 1][currentCol]&& !ghostExist[currentRow][currentCol]) {
-                updateGhost(currentRow, currentCol, currentRow + 1, currentCol);
-                updateChance(movementChance, movementChance[1][i], i);
-                ghostrow[i] += 1;
-            }
-            // Move left
-            else if (precent + movementChance[2][i] > 75 && currentCol > 0 && !wallExists[currentRow][currentCol - 1] && !ghostExist[currentRow][currentCol]) {
-                updateGhost(currentRow, currentCol, currentRow, currentCol - 1);
-                updateChance(movementChance, movementChance[2][i], i);
-                ghostcol[i] -= 1;
-            }
-            // Move right
-            else if (precent + movementChance[3][i] > 75 && currentCol < COLS - 1 && !wallExists[currentRow][currentCol + 1] && !ghostExist[currentRow][currentCol]){
-                updateGhost(currentRow, currentCol, currentRow, currentCol + 1);
-                updateChance(movementChance, movementChance[3][i], i);
-                ghostcol[i] += 1;
-            } else {
-                // Fallback to random direction if no valid move found
-                MoveRandDir(&ghostrow[i], &ghostcol[i]);
-            }
+            MoveRandDir(&ghostrow[i], &ghostcol[i]);
         }
+        next_ghost:;
     }
 }
 
-// for the first couple turns, move the ghosts out individually.
-void Parentfunct_moveGhosts(int ghostRow[], int ghostCol[], int runTime){
-if(runTime < 5){
-    MoveRandDir(&ghostRow[0], &ghostCol[0]);
-}else if(runTime < 10 && runTime > 5){
-    MoveRandDir(&ghostRow[0], &ghostCol[0]);
-    MoveRandDir(&ghostRow[1], &ghostCol[1]); //move first 2
-}else if(runTime > 10 && runTime < 15){
-    MoveRandDir(&ghostRow[0], &ghostCol[0]);
-    MoveRandDir(&ghostRow[1], &ghostCol[1]);
-    MoveRandDir(&ghostRow[2], &ghostCol[2]); //move first 3
-}else{
-    ghostAI(ghostRow, ghostCol); //AI takes over
-}     
+void Parentfunct_moveGhosts(int ghostRow[], int ghostCol[], int runTime) {
+    int maxMove = (runTime < 5) ? 1 : (runTime < 10) ? 2 : (runTime < 15) ? 3 : 4;
+
+    if (maxMove < 4) {
+        for (int i = 0; i < maxMove; i++) {
+            MoveRandDir(&ghostRow[i], &ghostCol[i]);
+        }
+    } else {
+        ghostAI(ghostRow, ghostCol);
+    }
 }
 
 void movePlayer(int userCord[], char moveInput){
@@ -377,8 +314,21 @@ void movePlayer(int userCord[], char moveInput){
         userCord[1] = nc;
     }
 }
+void bottomText(int gameRunTime){
+    if(!powerPelletIsOn){
+        printf("[A/W/S/D, 0 to quit]");
+        return;
+    }else if(powerPelletIsOn && powerPelletActiveFor > 13){
+        printf("|||POWERPELLET ON|||");
+        return;
+    }else if(powerPelletIsOn && powerPelletActiveFor > 7){
+        printf(" ||POWERPELLET ON|| ");
+        return;}
+    else if(powerPelletIsOn && powerPelletActiveFor > 3){
+        printf("  |POWERPELLET ON|  ");
+        return;}}
 
-void display_map(int lives){ // prints map
+void display_map(int lives, int gameRunTime){ // prints map
     for (int i = 0; i < ROWS; i++) {
         for (int j = 0; j < COLS; j++){
             if(wallExists[i][j]){
@@ -398,7 +348,7 @@ void display_map(int lives){ // prints map
         wprintf(L"\n");
     }
         wprintf(L"SCORE: %d   LIVES: %d\n", totalPlayerScore, lives);
-        wprintf(L"Enter move (w/a/s/d) or '0' to quit: \n"); 
+        bottomText(gameRunTime);
 }
 
 void teleportCheck(int userCord[], int ghostRow[], int ghostCol[]){
@@ -450,32 +400,31 @@ void resetGame(int userCord[], int ghostRow[], int ghostCol[])
 bool switchingPowerPelletOn = false;
 
 void powerPelletFunction(int gameRunTime, int userCord[], int ghostRow[], int ghostCol[]){
-    int i = userCord[0];
-    int j = userCord[1]; //Check these, they just define userRow and userCol
-    if(playerExist[i][j] && powerPelletExist[i][j]){
+    int r = userCord[0];
+    int c = userCord[1]; //Check these, they just define userRow and userCol
+    if(playerExist[r][c] && powerPelletExist[r][c]){
         switchingPowerPelletOn = true;
-        powerPelletExist[i][j] = false;
+        powerPelletExist[r][c] = false;
         totalPlayerScore += 200; //I looked this up this is how much you get if the screen freezes
     }
     if (switchingPowerPelletOn){ // powerPelletSwitch triggers itself false inside the statement. makes powerPellet active
-        powerPelletActiveFor = 12;
+        powerPelletActiveFor = 20; // change how long powerPellet lasts
         powerPelletIsOn = true;
         switchingPowerPelletOn = false;
     }
-    if(powerPelletActiveFor > 0){
-        if(ghostExist[userCord[0]][userCord[1]] && playerExist[userCord[0]][userCord[1]]){
+    if(powerPelletIsOn){
+        if(ghostExist[r][userCord[1]] && playerExist[userCord[0]][userCord[1]]){
             //ghost dies
             totalPlayerScore += 400;
-            ghostExist[userCord[0]][userCord[1]] = false;
+            ghostExist[r][c] = false;
             ghostExist[9][9] = true;
             for (int a = 0; a < 4; a++){ // check to see what ghost the player killed
-                if(ghostRow[a] == i && ghostCol[a] == j){
+                if(ghostRow[a] == r && ghostCol[a] == c){
                     ghostRow[a] = 9;
                     ghostCol[a] = 9;
                 }
             }
         }
-        wprintf(L"POWER PELLET ACTIVE! %d MOVE(S) LEFT!\n", powerPelletActiveFor);
         powerPelletActiveFor--;
     }
     if(powerPelletActiveFor == 1){
@@ -533,7 +482,7 @@ int main() {
     while (running && !gameOvercheck(userCord, &lives, ghostRow, ghostCol)){
         gameRunTime++;
         char input;
-        display_map(lives);
+        display_map(lives, gameRunTime);
         //ghostDebug();
         scanf(" %c", &input);
         if (input == '0'){
@@ -543,6 +492,6 @@ int main() {
         teleportCheck(userCord, ghostRow, ghostCol);
         powerPelletFunction(gameRunTime, userCord, ghostRow, ghostCol);
 }
-    display_map(lives);
+    display_map(lives, gameRunTime); //Display Map one more time
 return 0;
 }
