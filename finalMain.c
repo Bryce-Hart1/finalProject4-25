@@ -32,7 +32,8 @@ int powerPelletActiveFor = 0; // how many more turns powerPellet is active for
 #define ROWS 21
 #define COLS 19
 int totalPlayerScore = 0;
-
+int playerIconDirection = 3; // 3 for <, refer to above order
+const wchar_t playerIconArr[4] = {characterUp, characterDown, characterLeft, characterRight};
 /*
 we then made true false arrays for all items. this makes everything very simple to keep up with
 needed one for walls pellets powerpellets player and ghost (so 5). made walls const so that way the wall cannot be replaced.
@@ -346,10 +347,21 @@ void movePlayer(int userCord[], char moveInput){
     int nr = cr, nc = cc;
 
     switch(moveInput){
-        case 'a': nc -= 1; break;
-        case 'w': nr -= 1; break;
-        case 's': nr += 1; break;
-        case 'd': nc += 1; break;
+        case 'a': 
+        nc -= 1; 
+            playerIconDirection = 2;
+            break;
+        case 'w': 
+            nr -= 1; 
+            playerIconDirection = 0;
+            break;
+        case 's': 
+            nr += 1;
+            playerIconDirection = 1;
+            break;
+        case 'd': nc += 1;
+            playerIconDirection = 3;
+            break;
         default: return; // Invalid input
     }
 
@@ -363,18 +375,16 @@ void movePlayer(int userCord[], char moveInput){
         pelletsExists[nr][nc] = false;
         userCord[0] = nr;
         userCord[1] = nc;
-    }// player will not move
+    }
 }
 
-// Print the game map this will do all chars. this will always print the map
-//you do not need to do == true
-void display_map(int lives){
+void display_map(int lives){ // prints map
     for (int i = 0; i < ROWS; i++) {
         for (int j = 0; j < COLS; j++){
             if(wallExists[i][j]){
                 wprintf(L"%lc", block);
             }else if(playerExist[i][j]){
-                wprintf(L"%lc", characterRight);
+                wprintf(L"%lc", playerIconArr[playerIconDirection]);
             }else if(powerPelletExist[i][j]){
                 wprintf(L"%lc", powerPellet);
             }else if(ghostExist[i][j]){
@@ -437,19 +447,20 @@ void resetGame(int userCord[], int ghostRow[], int ghostCol[])
     ghostCol[3] = 10;
 }
 
-bool switchPowerPellet = false;
+bool switchingPowerPelletOn = false;
 
-void powerPelletActive(int gameRunTime, int userCord[], int ghostRow[], int ghostCol[]){
+void powerPelletFunction(int gameRunTime, int userCord[], int ghostRow[], int ghostCol[]){
     int i = userCord[0];
     int j = userCord[1]; //Check these, they just define userRow and userCol
     if(playerExist[i][j] && powerPelletExist[i][j]){
-        switchPowerPellet = true;
+        switchingPowerPelletOn = true;
         powerPelletExist[i][j] = false;
+        totalPlayerScore += 200; //I looked this up this is how much you get if the screen freezes
     }
-    if (switchPowerPellet){ // powerPelletSwitch triggers itself false inside the statement. makes powerPellet active
+    if (switchingPowerPelletOn){ // powerPelletSwitch triggers itself false inside the statement. makes powerPellet active
         powerPelletActiveFor = 12;
         powerPelletIsOn = true;
-        switchPowerPellet = false;
+        switchingPowerPelletOn = false;
     }
     if(powerPelletActiveFor > 0){
         if(ghostExist[userCord[0]][userCord[1]] && playerExist[userCord[0]][userCord[1]]){
@@ -519,8 +530,6 @@ int main() {
     int gameRunTime = 0;
     int score = 0; //14,600 for pellets, 1,000 for 4 power pellets (250), 800 for each ghost killed
     int lives = 3;
-    int powerPelletActiveFor = 0; //12 ticks(moves) are added when a power pellet is used
-
     while (running && !gameOvercheck(userCord, &lives, ghostRow, ghostCol)){
         gameRunTime++;
         char input;
@@ -532,7 +541,7 @@ int main() {
         movePlayer(userCord, input);
         Parentfunct_moveGhosts(ghostRow, ghostCol, gameRunTime);
         teleportCheck(userCord, ghostRow, ghostCol);
-        powerPelletActive(gameRunTime, userCord, ghostRow, ghostCol);
+        powerPelletFunction(gameRunTime, userCord, ghostRow, ghostCol);
 }
     display_map(lives);
 return 0;
