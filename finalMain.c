@@ -340,7 +340,16 @@ void bottomText(int gameRunTime){
     
 }
 
+void clearConsole() { //clears the console to make the print a little more smooth
+    #ifdef _WIN32
+        system("cls");
+    #else
+        system("clear");
+    #endif
+}
+
 void display_map(int lives, int gameRunTime){ // prints map
+    clearConsole();
     for (int i = 0; i < ROWS; i++) {
         for (int j = 0; j < COLS; j++){
             if(wallExists[i][j]){
