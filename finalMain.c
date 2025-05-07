@@ -320,7 +320,7 @@ void bottomText(int gameRunTime){
     char messageToDisplay[ROWS] = " FREEZE ACTIVE "; // message displayed at the bottom
     char messagePowerPelletOn[ROWS];
     if(!powerPelletIsOn && (gameRunTime % 10) > 5){
-        printf("|A/W/S/D, 0 to quit|");
+        wprintf(L"|A/W/S/D, 0 to quit|");
         return;
     }else if(powerPelletIsOn && powerPelletActiveFor > 0){
         for(int i = 0; i < ROWS; i++){
@@ -331,10 +331,10 @@ void bottomText(int gameRunTime){
             }
         }
         for(int j = 0; j < ROWS; j++){
-            printf("%c", messageToDisplay[j]);
+            wprintf(L"%c", messageToDisplay[j]);
         }
     }else{
-        printf("| Current turn: %d |", gameRunTime);
+        wprintf(L"| Current turn: %d |", gameRunTime);
     }
 
     
@@ -349,7 +349,6 @@ void clearConsole() { //clears the console to make the print a little more smoot
 }
 
 void display_map(int lives, int gameRunTime){ // prints map
-    clearConsole();
     for (int i = 0; i < ROWS; i++) {
         for (int j = 0; j < COLS; j++){
             if(wallExists[i][j]){
@@ -512,6 +511,7 @@ int main() {
         Parentfunct_moveGhosts(ghostRow, ghostCol, gameRunTime);
         teleportCheck(userCord, ghostRow, ghostCol);
         powerPelletFunction(gameRunTime, userCord, ghostRow, ghostCol);
+        clearConsole();
 }
     display_map(lives, gameRunTime); //Display Map one more time
     printf("\n|  Final Score: %d  |", score);
