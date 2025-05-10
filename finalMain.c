@@ -6,6 +6,9 @@
 typedef int bool;
 #define false 0
 #define true 1
+
+//This project was made in collaboration with Bryce Hart and Garrett Bateman
+
 /*
 we were having issues with how unicode prints on windows compared to windows.
 This program has only been tested for the following terminals: zsh, powershell
