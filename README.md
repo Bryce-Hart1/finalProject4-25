@@ -1,4 +1,5 @@
-This project was made in collaboration between Bryce Hart (Bryce-Hart1) and Garrett Bateman (GarrettBat)
+This project was made in collaboration between Bryce Hart (Bryce-Hart1) and Garrett Bateman (GarrettBat).
+
 This is a working terminal pacman game!
 To start, this game works on both windows and mac, in most terminals that support unicode 16
 when first running, you will see a 19 row by 21 column grid that represents the map area, with "<" representing the character
